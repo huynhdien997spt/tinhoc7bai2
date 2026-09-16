@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tin học 7 – Bài 02: Phần mềm máy tính</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   BIẾN CSS – GIÁO VIÊN CÓ THỂ THAY MÀU SẮC TẠI ĐÂY
+   ============================================================ */
+:root{
+  --color-bg:#f3f7ff;
+  --color-bg-alt:#ffffff;
+  --color-primary:#4f46e5;
+  --color-primary-dark:#3730a3;
+  --color-secondary:#06b6d4;
+  --color-accent:#f59e0b;
+  --color-pink:#ec4899;
+  --color-purple:#8b5cf6;
+  --color-ink:#0f2a3d;
+  --color-ink-soft:#4a6072;
+  --color-card:#ffffff;
+  --color-line:#d7e6eb;
+  --color-success:#1e8a4c;
+  --color-success-bg:#e5f6ec;
+  --color-error:#c8402c;
+  --color-error-bg:#fbe9e6;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 4px 18px rgba(14,42,61,0.08);
+  --nav-h:64px;
+  --progress-h:6px;
+  --font:'Be Vietnam Pro', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+[data-theme="dark"]{
+  --color-bg:#0c1c26;
+  --color-bg-alt:#122939;
+  --color-card:#122939;
+  --color-ink:#eef6f8;
+  --color-ink-soft:#a9c0cc;
+  --color-line:#1f3e4e;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--font);
+  background:var(--color-bg);
+  color:var(--color-ink);
+  padding-top:calc(var(--nav-h) + var(--progress-h));
+  line-height:1.55;
+}
+h1,h2,h3,h4{font-family:var(--font);font-weight:700;margin:0 0 .5em;color:var(--color-ink);}
+p{margin:0 0 1em;color:var(--color-ink-soft);}
+button{font-family:var(--font);cursor:pointer;}
+img,svg{max-width:100%;}
+:focus-visible{outline:3px solid var(--color-accent);outline-offset:2px;}
+
+/* ==== THANH ĐIỀU HƯỚNG CỐ ĐỊNH ==== */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:500;background:var(--color-bg-alt);box-shadow:var(--shadow);}
+#progressbar{height:var(--progress-h);background:var(--color-line);}
+#progressfill{height:100%;background:linear-gradient(90deg,var(--color-secondary),var(--color-primary));width:0%;transition:width .4s ease;}
+#navrow{height:var(--nav-h);display:flex;align-items:center;padding:0 12px;gap:8px;}
+#navtoggle{display:none;background:var(--color-primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 12px;font-weight:600;}
+#navlogo{font-weight:800;color:var(--color-primary);white-space:nowrap;font-size:.85rem;padding-right:6px;flex-shrink:0;}
+#navlist{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:thin;}
+.navbtn{border:none;background:transparent;color:var(--color-ink-soft);padding:8px 12px;border-radius:999px;font-size:.82rem;font-weight:600;white-space:nowrap;flex-shrink:0;transition:.15s;}
+.navbtn:hover{background:var(--color-bg);}
+.navbtn.active{background:var(--color-primary);color:#fff;}
+.navbtn.done::after{content:" ✓";}
+#navtools{display:flex;gap:6px;flex-shrink:0;}
+.icobtn{border:1px solid var(--color-line);background:var(--color-bg-alt);border-radius:var(--radius-sm);width:38px;height:38px;font-size:1rem;flex-shrink:0;}
+
+/* ==== KHUNG MÀN HÌNH ==== */
+.screen{display:none;max-width:920px;margin:0 auto;padding:32px 18px 80px;animation:fadein .35s ease;}
+.screen.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.card{background:var(--color-card);border:1px solid var(--color-line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* ==== NÚT DÙNG CHUNG ==== */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:999px;padding:11px 22px;font-weight:700;font-size:.95rem;transition:.15s;}
+.btn-primary{background:var(--color-primary);color:#fff;}
+.btn-primary:hover{background:var(--color-primary-dark);}
+.btn-accent{background:var(--color-accent);color:#fff;}
+.btn-ghost{background:transparent;border:1.5px solid var(--color-line);color:var(--color-ink);}
+.btn-ghost:hover{border-color:var(--color-primary);color:var(--color-primary);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+
+/* ==== TRANG CHỦ ==== */
+.school-banner{text-align:center;padding-top:6px;}
+.school-name{font-size:.85rem;font-weight:800;letter-spacing:.02em;color:var(--color-primary-dark);}
+.logo-badge{width:56px;height:56px;border-radius:50%;background:var(--color-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 8px;}
+.hero{text-align:center;padding:22px 10px 6px;}
+.hero .subject{color:var(--color-secondary);font-weight:700;font-size:1rem;margin-bottom:2px;}
+.hero .teacher{color:var(--color-ink-soft);font-size:.92rem;margin-bottom:18px;}
+.hero h1{font-size:clamp(1.5rem,4.5vw,2.35rem);color:var(--color-primary-dark);line-height:1.25;}
+.hero .tagline{max-width:520px;margin:8px auto 22px;color:var(--color-ink-soft);}
+.hero-illustration{display:flex;justify-content:center;gap:18px;font-size:2.6rem;margin:10px 0 26px;}
+.namebox{display:flex;gap:10px;max-width:420px;margin:0 auto 18px;flex-wrap:wrap;justify-content:center;}
+.namebox input{flex:1;min-width:200px;padding:12px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--color-line);font-size:1rem;font-family:var(--font);}
+.goalcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;}
+@media(max-width:640px){.goalcards{grid-template-columns:1fr;}}
+.goalcard{background:var(--color-bg-alt);border:1px solid var(--color-line);border-radius:var(--radius);padding:16px;text-align:left;}
+.goalcard .ico{font-size:1.5rem;}
+.goalcard h4{font-size:.95rem;margin:8px 0 4px;color:var(--color-primary-dark);}
+.goalcard p{font-size:.85rem;margin:0;}
+
+/* ==== THẺ NỘI DUNG / KHÁI NIỆM ==== */
+.concept-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+@media(max-width:640px){.concept-cards{grid-template-columns:1fr;}}
+.concept-card{background:var(--color-bg-alt);border-left:5px solid var(--color-secondary);border-radius:var(--radius-sm);padding:16px;}
+.concept-card h4{color:var(--color-secondary);font-size:.95rem;}
+.concept-card p{font-size:.88rem;margin:0;}
+
+/* ==== VIDEO ==== */
+.videobox{background:#0f2a3d;border-radius:var(--radius);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:#cfe2ea;text-align:center;padding:20px;position:relative;overflow:hidden;}
+.videobox video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;display:none;}
+
+/* ==== CÂU HỎI ĐÚNG/SAI, TRẮC NGHIỆM ==== */
+.qcard{margin-bottom:16px;}
+.qcard .qtext{font-weight:700;margin-bottom:10px;}
+.optlist{display:flex;flex-direction:column;gap:8px;}
+.optbtn{text-align:left;border:1.5px solid var(--color-line);background:var(--color-bg-alt);border-radius:var(--radius-sm);padding:11px 14px;font-size:.94rem;color:var(--color-ink);width:100%;transition:.12s;}
+.optbtn:hover:not(:disabled){border-color:var(--color-primary);}
+.optbtn.selected{border-color:var(--color-primary);background:#e7f1fb;}
+.optbtn.correct{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);font-weight:700;}
+.optbtn.correct::before{content:"✓ ";}
+.optbtn.wrong{border-color:var(--color-error);background:var(--color-error-bg);color:var(--color-error);font-weight:700;}
+.optbtn.wrong::before{content:"✗ ";}
+.feedback{margin-top:10px;padding:12px 14px;border-radius:var(--radius-sm);font-size:.88rem;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:var(--color-success-bg);color:var(--color-success);}
+.feedback.no{background:var(--color-error-bg);color:var(--color-error);}
+
+/* ==== HOẠT ĐỘNG PHÂN LOẠI (chọn rồi đặt) ==== */
+.sortwrap{display:flex;flex-direction:column;gap:16px;}
+.sortpool{display:flex;flex-wrap:wrap;gap:10px;padding:14px;background:var(--color-bg-alt);border:1.5px dashed var(--color-line);border-radius:var(--radius);min-height:56px;}
+.sortitem{border:1.5px solid var(--color-primary);background:#fff;color:var(--color-primary);border-radius:999px;padding:8px 16px;font-weight:600;font-size:.88rem;}
+.sortitem.picked{background:var(--color-primary);color:#fff;}
+.sortitem[disabled]{opacity:.35;}
+.sortgroups{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+@media(max-width:640px){.sortgroups{grid-template-columns:1fr;}}
+.sortgroup{border:2px solid var(--color-secondary);border-radius:var(--radius);padding:14px;min-height:110px;background:#f2fbf9;}
+.sortgroup h4{color:var(--color-secondary);font-size:.9rem;margin-bottom:8px;}
+.sortgroup .placed{display:flex;flex-wrap:wrap;gap:8px;}
+.placeditem{background:#fff;border:1px solid var(--color-line);border-radius:999px;padding:6px 12px;font-size:.82rem;display:flex;align-items:center;gap:6px;}
+.placeditem button{border:none;background:none;color:var(--color-error);font-weight:800;padding:0;font-size:.9rem;}
+.placeditem.ok{border-color:var(--color-success);background:var(--color-success-bg);}
+.placeditem.no{border-color:var(--color-error);background:var(--color-error-bg);}
+
+/* ==== BẢNG SO SÁNH ==== */
+table.comparetable{width:100%;border-collapse:collapse;margin:14px 0;font-size:.9rem;}
+table.comparetable th,table.comparetable td{border:1px solid var(--color-line);padding:10px 12px;text-align:left;}
+table.comparetable th{background:var(--color-primary);color:#fff;}
+table.comparetable tr:nth-child(even) td{background:var(--color-bg-alt);}
+
+/* ==== GHÉP NỐI PHẦN MỞ RỘNG ==== */
+.matchwrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+@media(max-width:640px){.matchwrap{grid-template-columns:1fr;}}
+.matchcol h4{font-size:.85rem;color:var(--color-ink-soft);margin-bottom:8px;}
+.matchitem{display:block;width:100%;text-align:left;border:1.5px solid var(--color-line);background:var(--color-bg-alt);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:8px;font-size:.9rem;font-weight:600;}
+.matchitem.sel{border-color:var(--color-accent);background:#fff2e7;}
+.matchitem.matched{border-color:var(--color-success);background:var(--color-success-bg);color:var(--color-success);}
+.matchitem.matched::after{content:" ✓";}
+.matchitem:disabled{opacity:.55;}
+
+/* ==== TRÒ CHƠI HAI ĐỘI ==== */
+.teamrow{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-bottom:16px;}
+.teambox{background:var(--color-bg-alt);border:2px solid var(--color-line);border-radius:var(--radius);padding:14px;text-align:center;}
+.teambox.turn{border-color:var(--color-accent);box-shadow:0 0 0 4px #fce6d3;}
+.teambox input{width:100%;text-align:center;padding:8px;border-radius:8px;border:1px solid var(--color-line);font-family:var(--font);font-weight:700;margin-bottom:8px;}
+.teamscore{font-size:2rem;font-weight:800;color:var(--color-primary);}
+.timerbox{font-size:1.8rem;font-weight:800;color:var(--color-accent);text-align:center;font-variant-numeric:tabular-nums;}
+.turnpick{display:flex;gap:8px;justify-content:center;margin:10px 0;}
+
+/* ==== CHECKLIST ==== */
+.checklist label{display:flex;align-items:flex-start;gap:10px;padding:10px 4px;border-bottom:1px solid var(--color-line);font-size:.92rem;cursor:pointer;}
+.checklist input{margin-top:3px;width:18px;height:18px;flex-shrink:0;}
+
+/* ==== BÀI KIỂM TRA ==== */
+.quizmeta{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--color-ink-soft);margin-bottom:6px;}
+.quizbar{height:8px;background:var(--color-line);border-radius:99px;overflow:hidden;margin-bottom:18px;}
+.quizbarfill{height:100%;background:var(--color-secondary);width:0%;transition:.3s;}
+.scorecircle{width:130px;height:130px;border-radius:50%;border:10px solid var(--color-primary);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:800;color:var(--color-primary);margin:0 auto 16px;}
+
+/* ==== TỰ LUẬN ==== */
+textarea.essay{width:100%;min-height:130px;padding:12px 14px;border-radius:var(--radius-sm);border:1.5px solid var(--color-line);font-family:var(--font);font-size:.95rem;resize:vertical;}
+.wordcount{font-size:.8rem;color:var(--color-ink-soft);text-align:right;margin-top:4px;}
+.hintbox{margin-top:10px;background:#fff7ec;border:1.5px solid #f3d8ad;border-radius:var(--radius-sm);padding:12px 14px;font-size:.88rem;color:#7a5417;display:none;}
+.hintbox.show{display:block;}
+
+/* ==== TỔNG KẾT ==== */
+.summarygrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0;}
+@media(max-width:640px){.summarygrid{grid-template-columns:1fr;}}
+.statbox{background:var(--color-bg-alt);border:1px solid var(--color-line);border-radius:var(--radius);padding:16px;text-align:center;}
+.statbox .num{font-size:1.8rem;font-weight:800;color:var(--color-primary);}
+.statbox .lbl{font-size:.8rem;color:var(--color-ink-soft);}
+.badge-wrap{text-align:center;margin:22px 0;}
+.badge{display:inline-flex;flex-direction:column;align-items:center;gap:6px;background:linear-gradient(160deg,#fff7ec,#ffe9d1);border:2px solid var(--color-accent);border-radius:20px;padding:20px 30px;}
+.badge .ico{font-size:2.6rem;}
+.badge .name{font-weight:800;color:var(--color-accent);}
+.review-list{font-size:.9rem;}
+.review-list li{margin-bottom:4px;}
+
+/* ==== GHI NHỚ ==== */
+.remember{background:#eaf5ff;border:1.5px solid #bcdcf5;border-radius:var(--radius);padding:18px;}
+.remember ul{margin:0;padding-left:20px;}
+.remember li{margin-bottom:6px;}
+
+/* ==== TIẾN ĐỘ SECTION HEADER ==== */
+.sectiontag{display:inline-block;background:var(--color-secondary);color:#fff;font-size:.75rem;font-weight:700;padding:4px 12px;border-radius:999px;margin-bottom:10px;}
+
+/* ==== THANH CÔNG CỤ GIÁO VIÊN ==== */
+#teacherbar{position:fixed;bottom:16px;right:16px;z-index:400;background:var(--color-ink);color:#fff;border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;max-width:220px;transform:translateX(260px);transition:.25s;}
+#teacherbar.open{transform:translateX(0);}
+#teacherbar button{background:#1c3d52;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-size:.78rem;text-align:left;}
+#teacherbar button:hover{background:#274f68;}
+#teacherbartoggle{position:fixed;bottom:16px;right:16px;z-index:401;background:var(--color-ink);color:#fff;border:none;width:46px;height:46px;border-radius:50%;font-size:1.1rem;box-shadow:var(--shadow);}
+#teacherbar-label{font-size:.72rem;opacity:.7;padding:2px 4px 4px;}
+
+@media(max-width:820px){
+  #navtoggle{display:inline-flex;}
+  #navlist{display:none;position:absolute;top:var(--nav-h);left:0;right:0;background:var(--color-bg-alt);flex-direction:column;box-shadow:var(--shadow);padding:8px;max-height:70vh;overflow-y:auto;}
+  #navlist.open{display:flex;}
+  .navbtn{width:100%;text-align:left;}
+}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+
+/* ============================================================
+   GAME MODE – DATA LAB 7
+   ============================================================ */
+body{
+  background:
+    radial-gradient(circle at 8% 10%, rgba(6,182,212,.13), transparent 28%),
+    radial-gradient(circle at 92% 12%, rgba(139,92,246,.13), transparent 30%),
+    linear-gradient(180deg,#f3f7ff 0%,#f8fbff 50%,#fffaf1 100%);
+}
+.card{
+  border:1px solid rgba(79,70,229,.13);
+  box-shadow:0 8px 28px rgba(51,65,85,.09);
+}
+.btn{transition:transform .14s ease, box-shadow .14s ease, filter .14s ease;}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 7px 16px rgba(79,70,229,.18);}
+.btn:active:not(:disabled){transform:translateY(0) scale(.98);}
+.btn-primary{background:linear-gradient(135deg,var(--color-primary),var(--color-purple));}
+.btn-accent{background:linear-gradient(135deg,#f59e0b,#f97316);}
+.sectiontag{
+  background:linear-gradient(135deg,var(--color-secondary),var(--color-primary));
+  box-shadow:0 5px 14px rgba(79,70,229,.18);
+}
+#navlogo{
+  color:var(--color-primary);
+  font-size:.92rem;
+}
+#xpHUD{
+  min-width:82px;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 11px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#fff8d9,#fff1b8);
+  border:1px solid #f7cf61;
+  color:#8a5a00;
+  font-weight:800;
+  font-size:.8rem;
+  white-space:nowrap;
+}
+.game-hero{
+  background:
+    linear-gradient(135deg,rgba(79,70,229,.08),rgba(6,182,212,.08)),
+    var(--color-card);
+  border:1px solid rgba(79,70,229,.18);
+  overflow:hidden;
+  position:relative;
+}
+.game-hero::before,.game-hero::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+.game-hero::before{width:180px;height:180px;background:rgba(245,158,11,.10);right:-60px;top:-70px;}
+.game-hero::after{width:130px;height:130px;background:rgba(236,72,153,.08);left:-55px;bottom:-60px;}
+.lab-title{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 13px;
+  border-radius:999px;
+  color:#4338ca;
+  background:#eef2ff;
+  font-weight:800;
+  font-size:.82rem;
+  margin-bottom:10px;
+}
+.mission-map{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:18px;
+  position:relative;
+}
+.mission-node{
+  min-height:122px;
+  padding:14px 12px;
+  border-radius:18px;
+  border:2px solid #dbe4f0;
+  background:rgba(255,255,255,.9);
+  text-align:center;
+  position:relative;
+  transition:.2s ease;
+}
+.mission-node .micon{font-size:2rem;display:block;margin-bottom:4px;}
+.mission-node strong{display:block;font-size:.9rem;color:var(--color-ink);}
+.mission-node small{display:block;color:var(--color-ink-soft);font-size:.74rem;margin-top:4px;}
+.mission-node.active{
+  border-color:var(--color-accent);
+  box-shadow:0 0 0 5px rgba(245,158,11,.14);
+  transform:translateY(-3px);
+}
+.mission-node.done{
+  border-color:#4ade80;
+  background:#f0fdf4;
+}
+.mission-node.done::after{
+  content:"✓";
+  position:absolute;right:8px;top:8px;
+  width:25px;height:25px;border-radius:50%;
+  background:#22c55e;color:#fff;
+  display:grid;place-items:center;
+  font-weight:900;
+}
+@media(max-width:720px){.mission-map{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.mission-map{grid-template-columns:1fr;}}
+
+.mission-banner{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:16px 18px;
+  border-radius:18px;
+  margin-bottom:18px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--color-primary),var(--color-purple));
+  box-shadow:0 9px 22px rgba(79,70,229,.18);
+}
+.mission-banner .icon{font-size:2.2rem;}
+.mission-banner h3{margin:0;color:#fff;font-size:1.02rem;}
+.mission-banner p{margin:2px 0 0;color:rgba(255,255,255,.9);font-size:.82rem;}
+
+.badge-strip{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin:14px 0 2px;
+}
+.game-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border-radius:999px;
+  padding:7px 11px;
+  border:1px solid #dbe4f0;
+  background:#f8fafc;
+  color:#94a3b8;
+  font-size:.76rem;
+  font-weight:800;
+  filter:grayscale(1);
+  opacity:.65;
+}
+.game-badge.unlocked{
+  color:#694500;
+  background:#fff8d9;
+  border-color:#f7cf61;
+  filter:none;
+  opacity:1;
+  box-shadow:0 4px 12px rgba(245,158,11,.12);
+}
+
+#gameToast{
+  position:fixed;
+  left:50%;top:86px;
+  transform:translate(-50%,-18px);
+  z-index:900;
+  min-width:min(430px,calc(100vw - 30px));
+  max-width:520px;
+  padding:13px 17px;
+  border-radius:16px;
+  background:#172554;
+  color:#fff;
+  box-shadow:0 16px 40px rgba(15,23,42,.24);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s ease;
+  text-align:center;
+  font-weight:800;
+}
+#gameToast.show{opacity:1;transform:translate(-50%,0);}
+#gameToast small{display:block;font-weight:500;opacity:.82;margin-top:2px;}
+
+#labMascot{
+  position:fixed;
+  left:16px;bottom:16px;
+  z-index:390;
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  pointer-events:none;
+}
+#labMascot .bot{
+  width:52px;height:52px;border-radius:18px;
+  display:grid;place-items:center;
+  font-size:1.8rem;
+  background:linear-gradient(135deg,#22d3ee,#6366f1);
+  box-shadow:0 9px 22px rgba(79,70,229,.24);
+  border:2px solid #fff;
+}
+#labMascot .bubble{
+  max-width:240px;
+  padding:9px 11px;
+  border-radius:14px 14px 14px 4px;
+  background:#fff;
+  color:#334155;
+  border:1px solid #dbe4f0;
+  box-shadow:0 7px 18px rgba(15,23,42,.10);
+  font-size:.75rem;
+  font-weight:600;
+}
+@media(max-width:650px){#labMascot .bubble{display:none;}}
+
+.confetti-piece{
+  position:fixed;
+  top:-18px;
+  width:9px;height:13px;
+  z-index:999;
+  pointer-events:none;
+  animation:confettiFall 1.6s linear forwards;
+}
+@keyframes confettiFall{
+  to{transform:translate(var(--drift),110vh) rotate(720deg);opacity:.2;}
+}
+
+.optbtn.correct,.placeditem.ok,.matchitem.matched{
+  animation:successPop .24s ease;
+}
+@keyframes successPop{50%{transform:scale(1.025)}}
+.optbtn.wrong,.placeditem.no{
+  animation:softShake .28s ease;
+}
+@keyframes softShake{25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}}
+
+.final-victory{
+  background:linear-gradient(135deg,#fff7d6,#f4edff);
+  border:2px solid #f1c85c;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.final-victory .trophy{font-size:3.4rem;}
+.final-victory h3{color:#5b21b6;font-size:1.25rem;margin-top:4px;}
+
+</style>
+</head>
+<body>
+
+<!-- ============ THANH TIẾN ĐỘ + ĐIỀU HƯỚNG CỐ ĐỊNH ============ -->
+<div id="topbar">
+  <div id="progressbar"><div id="progressfill"></div></div>
+  <div id="navrow">
+    <button id="navtoggle" aria-label="Mở menu điều hướng">☰</button>
+    <div id="navlogo">Bài 02</div>
+    <div id="navlist" role="tablist" aria-label="Điều hướng bài học"></div>
+    <div id="navtools">
+      <div id="xpHUD" title="Điểm tiến bộ">⭐ 0 XP</div>
+      <button class="icobtn" id="soundBtn" title="Bật/tắt âm thanh" aria-label="Bật/tắt âm thanh">🔊</button>
+      <button class="icobtn" id="fullscreenBtn" title="Toàn màn hình" aria-label="Chuyển sang toàn màn hình">⛶</button>
+    </div>
+  </div>
+</div>
+
+<div id="gameToast" role="status" aria-live="polite"></div>
+<div id="labMascot" aria-hidden="true">
+  <div class="bot">🤖</div>
+  <div class="bubble" id="mascotBubble">Chào mừng đến DATA LAB! Hoàn thành từng nhiệm vụ để mở khóa huy hiệu nhé.</div>
+</div>
+
+<!-- ============ 1. TRANG CHỦ ============ -->
+<section class="screen" id="screen-home" data-screen="home">
+  <div class="card school-banner game-hero">
+    <div class="logo-badge">🧪</div>
+    <!-- GHI CHÚ: Giáo viên thay tên trường tại dòng dưới -->
+    <div class="school-name">TRƯỜNG TH, THCS, THPT VIỆT HOA</div>
+    <div class="hero">
+      <div class="lab-title">🎮 DATA LAB 7 · NHIỆM VỤ PHẦN MỀM</div>
+      <div class="subject">Môn: Tin học 7</div>
+      <!-- GHI CHÚ: Giáo viên thay tên giáo viên tại dòng dưới -->
+      <div class="teacher">Giáo viên: Huỳnh Văn Diễn</div>
+      <h1>DATA LAB – GIẢI CỨU PHÒNG MÁY</h1>
+      <p class="tagline"><strong>Bài 02: Phần mềm máy tính · Tiết 2 – 45 phút.</strong><br>
+      Em là thành viên mới của DATA LAB. Hãy vượt qua 4 nhiệm vụ để khôi phục hệ thống, mở khóa huy hiệu và trở thành <strong>DATA LAB HERO</strong>.</p>
+      <div class="hero-illustration" aria-hidden="true">
+        <span>🧰</span><span>🖥️</span><span>🧩</span><span>🤖</span><span>🏆</span>
+      </div>
+      <div class="namebox">
+        <label for="studentNameInput" class="sr-only">Họ và tên học sinh</label>
+        <input id="studentNameInput" type="text" placeholder="Nhập họ và tên của em...">
+        <label for="studentClassInput" class="sr-only">Lớp</label>
+        <input id="studentClassInput" type="text" placeholder="Lớp, ví dụ: 7A1">
+      </div>
+      <button class="btn btn-primary" id="startBtn" style="font-size:1.05rem;padding:13px 30px;">VÀO DATA LAB 🚀</button>
+    </div>
+    <div class="mission-map" id="missionMapHome">
+      <div class="mission-node" data-mission="1"><span class="micon">🧰</span><strong>MISSION 1</strong><small>Software Hunter<br>0–14 phút</small></div>
+      <div class="mission-node" data-mission="2"><span class="micon">📁</span><strong>MISSION 2</strong><small>File Detective<br>14–22 phút</small></div>
+      <div class="mission-node" data-mission="3"><span class="micon">🤖</span><strong>MISSION 3</strong><small>AI Guardian<br>22–37 phút</small></div>
+      <div class="mission-node" data-mission="4"><span class="micon">🛠️</span><strong>MISSION 4</strong><small>Final Rescue<br>37–43 phút</small></div>
+    </div>
+    <div class="badge-strip" id="badgeStripHome">
+      <span class="game-badge" data-badge="software">🧰 Software Spotter</span>
+      <span class="game-badge" data-badge="file">📁 File Detective</span>
+      <span class="game-badge" data-badge="ai">🤖 AI Guardian</span>
+      <span class="game-badge" data-badge="hero">🏆 Data Lab Hero</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. KHỞI ĐỘNG ============ -->
+<section class="screen" id="screen-warmup" data-screen="warmup">
+  <span class="sectiontag">Khởi động</span>
+  <h2>Cùng xem video mở đầu</h2>
+  <div class="card">
+    <!-- GHI CHÚ CHO GIÁO VIÊN: Thay thuộc tính src của thẻ <video> bên dưới
+         bằng đường dẫn video lắp ráp máy tính và cài đặt hệ điều hành.
+         Nếu chưa có video, phần khung chữ "Giáo viên bổ sung video tại đây" sẽ tự hiển thị. -->
+    <div class="videobox" id="videoBox">
+      <video id="lessonVideo" controls>
+        <!-- <source src="video-cua-giao-vien.mp4" type="video/mp4"> -->
+      </video>
+      <div id="videoPlaceholder">
+        <div style="font-size:2.4rem;">🎬</div>
+        <p style="color:#cfe2ea;margin-top:8px;">Giáo viên bổ sung video tại đây</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Trả lời các câu hỏi sau</h3>
+    <p style="font-size:.85rem;">Hãy trả lời lần lượt từng câu. Mỗi câu sẽ có giải thích ngay sau khi em chọn.</p>
+    <div id="warmupQuestions"></div>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="os">Tiếp theo: Hệ điều hành →</button></div>
+</section>
+
+<!-- ============ 3. HỆ ĐIỀU HÀNH ============ -->
+<section class="screen" id="screen-os" data-screen="os">
+  <span class="sectiontag">Kiến thức</span>
+  <h2>Hệ điều hành là gì?</h2>
+  <div class="card">
+    <p><strong>Hệ điều hành</strong> là phần mềm hệ thống quản lí hoạt động của máy tính và tạo môi trường để các phần mềm ứng dụng hoạt động.</p>
+    <div class="concept-cards">
+      <div class="concept-card"><h4>🖧 Quản lí thiết bị</h4><p>Điều khiển hoạt động của các thiết bị phần cứng.</p></div>
+      <div class="concept-card"><h4>▶️ Tổ chức thực hiện</h4><p>Tổ chức thực hiện các chương trình đang chạy.</p></div>
+      <div class="concept-card"><h4>🗂️ Quản lí tệp</h4><p>Quản lí tệp và dữ liệu trên máy tính.</p></div>
+      <div class="concept-card"><h4>🖱️ Giao diện</h4><p>Cung cấp giao diện trao đổi giữa người dùng và máy tính.</p></div>
+      <div class="concept-card"><h4>🧰 Môi trường ứng dụng</h4><p>Cung cấp môi trường cho phần mềm ứng dụng hoạt động.</p></div>
+      <div class="concept-card"><h4>💻 Ví dụ</h4><p>Windows, macOS, Linux (máy tính); Android, iOS (điện thoại, máy tính bảng).</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Hoạt động: Phân loại hệ điều hành</h3>
+    <p style="font-size:.85rem;">Chạm vào một hệ điều hành ở danh sách, sau đó chạm vào nhóm phù hợp để xếp vào đó.</p>
+    <div id="osSortGame"></div>
+  </div>
+  <div class="card">
+    <h3>🏁 Trò chơi: Ai nhanh hơn</h3>
+    <p style="font-size:.85rem;">Trò chơi hai đội, dành cho giáo viên tổ chức trên lớp.</p>
+    <div id="raceGame"></div>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="apps">Tiếp theo: Phần mềm ứng dụng →</button></div>
+</section>
+
+<!-- ============ 4. PHẦN MỀM ỨNG DỤNG ============ -->
+<section class="screen" id="screen-apps" data-screen="apps">
+  <span class="sectiontag">MISSION 1A · 0–8 phút</span>
+  <h2>🧰 Software Hunter – Chọn đúng công cụ</h2>
+  <div class="mission-banner"><div class="icon">🧰</div><div><h3>Mục tiêu: khôi phục bộ công cụ của phòng máy</h3><p>Ghép đúng công việc với phần mềm phù hợp để nhận XP.</p></div></div>
+  <div class="card">
+    <p><strong>Gợi nhớ nhanh:</strong> Phần mềm ứng dụng giúp con người thực hiện một công việc cụ thể. Em không cần học lại định nghĩa; hãy quan sát ví dụ rồi chuyển ngay sang nhiệm vụ ghép công việc với phần mềm phù hợp.</p>
+    <div class="concept-cards" id="appExamples"></div>
+  </div>
+  <div class="card">
+    <h3>Trò chơi: Chọn đúng phần mềm</h3>
+    <p style="font-size:.85rem;">Chạm vào một công việc, sau đó chạm vào phần mềm phù hợp để ghép cặp.</p>
+    <div id="appsMatchGame"></div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--color-accent);box-shadow:none;">
+    <h3 style="font-size:1rem;">💬 Dừng 30 giây</h3>
+    <p style="margin:0;">Nếu máy tính chưa có hệ điều hành, Microsoft Word có thể hoạt động không? Hãy giải thích cho bạn bên cạnh bằng một câu.</p>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="compare">Mở khóa Mission 1B →</button></div>
+</section>
+
+<!-- ============ 5. PHÂN BIỆT HAI LOẠI PHẦN MỀM ============ -->
+<section class="screen" id="screen-compare" data-screen="compare">
+  <span class="sectiontag">MISSION 1B · 8–14 phút</span>
+  <h2>🧩 Sorting Battle – Phân loại phần mềm</h2>
+  <div class="mission-banner"><div class="icon">🧩</div><div><h3>Cổng hệ thống đang bị lẫn dữ liệu</h3><p>Phân loại đúng hệ điều hành và phần mềm ứng dụng để mở khóa Mission 2.</p></div></div>
+  <div class="card">
+    <p style="font-size:.86rem;"><strong>Bảng gợi nhớ 1 phút:</strong> đọc nhanh rồi thực hiện hoạt động xếp nhóm bên dưới.</p>
+    <div style="overflow-x:auto;">
+      <table class="comparetable">
+        <tr><th>Tiêu chí</th><th>Hệ điều hành</th><th>Phần mềm ứng dụng</th></tr>
+        <tr><td>Vai trò</td><td>Quản lí và điều khiển máy tính</td><td>Thực hiện công việc cụ thể</td></tr>
+        <tr><td>Thời điểm cài đặt</td><td>Thường được cài trước</td><td>Được cài sau hệ điều hành</td></tr>
+        <tr><td>Mức độ cần thiết</td><td>Cần thiết để máy tính hoạt động và chạy ứng dụng</td><td>Cài đặt tùy nhu cầu</td></tr>
+        <tr><td>Ví dụ</td><td>Windows, macOS, Linux, Android, iOS</td><td>Word, Scratch, Chrome, Zalo</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Hoạt động: Xếp nhóm phần mềm</h3>
+    <p style="font-size:.85rem;">Chạm vào một phần mềm, sau đó chạm vào nhóm phù hợp.</p>
+    <div id="compareSortGame"></div>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="ext">Mở khóa Mission 2 →</button></div>
+</section>
+
+<!-- ============ 6. PHẦN MỞ RỘNG CỦA TỆP ============ -->
+<section class="screen" id="screen-ext" data-screen="ext">
+  <span class="sectiontag">MISSION 2 · 14–22 phút</span>
+  <h2>📁 File Detective – Giải mã phần mở rộng</h2>
+  <div class="mission-banner"><div class="icon">🔎</div><div><h3>Các tệp trong DATA LAB đã mất nhãn</h3><p>Nhìn phần mở rộng và ghép đúng loại tệp để khôi phục kho dữ liệu.</p></div></div>
+  <div class="card">
+    <p><strong>Gợi nhớ:</strong> phần mở rộng nằm sau dấu chấm cuối cùng trong tên tệp và giúp nhận biết loại tệp. Hãy dùng kiến thức này để hoàn thành ghép nối.</p>
+  </div>
+  <div class="card">
+    <h3>Trò chơi ghép nối</h3>
+    <p style="font-size:.85rem;">Chạm vào một loại tệp bên trái, sau đó chạm vào phần mở rộng đúng bên phải.</p>
+    <div id="extMatchGame"></div>
+    <p id="extScore" style="font-weight:700;margin-top:10px;"></p>
+  </div>
+  <div class="card" style="border-left:5px solid var(--color-secondary);box-shadow:none;">
+    <h3 style="font-size:1rem;">🔎 Câu hỏi chốt</h3>
+    <p style="margin:0;">Khi nhìn thấy tệp <strong>game.sb3</strong>, em dựa vào chi tiết nào để nhận biết đây là dự án Scratch?</p>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="ai">Mở khóa Mission 3 →</button></div>
+</section>
+
+<!-- ============ 7. AI CÓ TRÁCH NHIỆM ============ -->
+<section class="screen" id="screen-ai" data-screen="ai">
+  <span class="sectiontag">MISSION 3A · 22–29 phút</span>
+  <h2>🤖 AI Guardian – Vượt bẫy AI</h2>
+  <div class="mission-banner"><div class="icon">🛡️</div><div><h3>AI đưa ra một câu trả lời rất nhanh… nhưng có chắc đúng?</h3><p>Ra quyết định có trách nhiệm: kiểm tra → đối chiếu → xác thực.</p></div></div>
+  <div class="card">
+    <p><em>"Một học sinh dùng Google Translate để dịch đoạn văn tiếng Anh và dùng ChatGPT để tìm thông tin làm bài tập. Học sinh định sao chép toàn bộ kết quả mà không kiểm tra."</em></p>
+    <p style="font-weight:700;">Theo em, học sinh đó nên làm gì?</p>
+    <div class="optlist" id="aiScenarioOptions"></div>
+    <div class="feedback" id="aiScenarioFeedback"></div>
+  </div>
+  <div class="card">
+    <h3>Ghi nhớ</h3>
+    <ul style="font-size:.9rem;color:var(--color-ink-soft);">
+      <li>Kết quả do AI tạo ra không phải lúc nào cũng chính xác.</li>
+      <li>AI có thể dịch sai, hiểu sai câu hỏi, tạo thông tin thiếu căn cứ hoặc nội dung không phù hợp.</li>
+      <li>Cần đọc lại, so sánh với sách giáo khoa hoặc nguồn đáng tin cậy.</li>
+      <li>Khi chưa chắc chắn, cần hỏi giáo viên hoặc người có chuyên môn.</li>
+      <li>Không nhập thông tin cá nhân hoặc dữ liệu nhạy cảm vào công cụ AI.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Tự đánh giá: Em đã làm gì trước khi nộp bài?</h3>
+    <div class="checklist" id="aiChecklist"></div>
+  </div>
+  <div class="card" style="border-left:5px solid var(--color-accent);box-shadow:none;">
+    <h3 style="font-size:1rem;">💬 Trao đổi 1 phút</h3>
+    <p style="margin:0;">Nếu AI trả lời sai nhưng người dùng không kiểm tra lại, điều gì có thể xảy ra trong học tập hoặc đời sống?</p>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="quiz">Tiếp tục Mission 3 →</button></div>
+</section>
+
+<!-- ============ 8. LUYỆN TẬP ============ -->
+<section class="screen" id="screen-quiz" data-screen="quiz">
+  <span class="sectiontag">MISSION 3B · 29–37 phút</span>
+  <h2>⚡ Knowledge Rush – 7 thử thách tốc độ</h2>
+  <div class="mission-banner"><div class="icon">⚡</div><div><h3>Chốt hệ thống trước vòng cuối</h3><p>Hoàn thành 7 câu để mở khóa khu vực Final Rescue.</p></div></div>
+  <div class="card">
+    <div class="quizmeta"><span id="quizDoneCount">Đã làm: 0/7</span><span id="quizStatus"></span></div>
+    <div class="quizbar"><div class="quizbarfill" id="quizBarFill"></div></div>
+    <div id="quizQuestions"></div>
+    <div id="quizResultBox" style="display:none;text-align:center;margin-top:10px;">
+      <div class="scorecircle" id="quizScoreCircle">0</div>
+      <p id="quizComment" style="font-weight:700;"></p>
+    </div>
+    <div class="btnrow">
+      <button class="btn btn-accent" id="quizSubmitBtn">Nộp bài</button>
+      <button class="btn btn-ghost" id="quizRetryBtn" style="display:none;">Làm lại bài kiểm tra</button>
+    </div>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="apply">Mở khóa Final Rescue →</button></div>
+</section>
+
+<!-- ============ 9. VẬN DỤNG ============ -->
+<section class="screen" id="screen-apply" data-screen="apply">
+  <span class="sectiontag">MISSION 4 · 37–43 phút</span>
+  <h2>🛠️ Final Rescue – Giải cứu phòng máy</h2>
+  <div class="mission-banner"><div class="icon">🛠️</div><div><h3>Vòng cuối: dùng kiến thức để xử lí tình huống thật</h3><p>Hoàn thành hai nhiệm vụ vận dụng để trở thành DATA LAB HERO.</p></div></div>
+  <div class="card">
+    <h3>Nhiệm vụ 1 · Trả lời ngắn</h3>
+    <p>Nêu <strong>ít nhất 2 bộ phận</strong> của máy tính trong phòng thực hành thường dễ hư hỏng, nguyên nhân và một cách bảo quản.</p>
+    <textarea class="essay" id="essay1" placeholder="Nhập câu trả lời của em..."></textarea>
+    <div class="wordcount"><span id="wc1">0</span> từ</div>
+    <div class="btnrow">
+      <button class="btn btn-primary" id="save1">Lưu câu trả lời</button>
+      <button class="btn btn-ghost" id="hint1Btn" disabled>Xem gợi ý</button>
+    </div>
+    <div class="hintbox" id="hint1">💡 Gợi ý: Hãy nghĩ đến các bộ phận như chuột, bàn phím, màn hình, dây cắm... và những nguyên nhân như va đập, bụi bẩn, nguồn điện không ổn định, sử dụng sai cách. Đề xuất cách bảo quản phù hợp cho từng bộ phận.</div>
+  </div>
+  <div class="card">
+    <h3>Nhiệm vụ 2 · Trọng tâm vận dụng</h3>
+    <p>Vì sao khi tải Scratch, em phải chọn phiên bản phù hợp với hệ điều hành của máy tính? Trả lời bằng 2–3 câu.</p>
+    <textarea class="essay" id="essay2" placeholder="Nhập câu trả lời của em..."></textarea>
+    <div class="wordcount"><span id="wc2">0</span> từ</div>
+    <div class="btnrow">
+      <button class="btn btn-primary" id="save2">Lưu câu trả lời</button>
+      <button class="btn btn-ghost" id="hint2Btn" disabled>Xem gợi ý</button>
+    </div>
+    <div class="hintbox" id="hint2">💡 Gợi ý: Hãy nghĩ đến tính tương thích giữa phần mềm và hệ điều hành, khả năng cài đặt và hoạt động ổn định. Một phiên bản không phù hợp có thể không cài đặt được hoặc không chạy đúng (nhưng không chắc chắn sẽ làm hỏng máy tính).</div>
+  </div>
+  <div class="btnrow"><button class="btn btn-primary" data-goto="summary">Vào Victory Room 🏆</button></div>
+</section>
+
+<!-- ============ 10. TỔNG KẾT ============ -->
+<section class="screen" id="screen-summary" data-screen="summary">
+  <span class="sectiontag">43–45 phút · VICTORY ROOM</span>
+  <h2 id="summaryTitle">🏆 Phòng chiến thắng</h2>
+  <div class="card final-victory" id="victoryCard">
+    <div class="trophy">🏆</div>
+    <h3>DATA LAB COMPLETED</h3>
+    <p id="victoryText">Hoàn thành các nhiệm vụ để mở khóa toàn bộ huy hiệu.</p>
+    <div class="badge-strip" id="badgeStripSummary">
+      <span class="game-badge" data-badge="software">🧰 Software Spotter</span>
+      <span class="game-badge" data-badge="file">📁 File Detective</span>
+      <span class="game-badge" data-badge="ai">🤖 AI Guardian</span>
+      <span class="game-badge" data-badge="hero">🏆 Data Lab Hero</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="summarygrid">
+      <div class="statbox"><div class="num" id="sumProgress">0%</div><div class="lbl">Tiến độ hoàn thành</div></div>
+      <div class="statbox"><div class="num" id="sumQuizScore">–</div><div class="lbl">Điểm luyện tập (/10)</div></div>
+      <div class="statbox"><div class="num" id="sumActivities">0</div><div class="lbl">Hoạt động đã hoàn thành</div></div>
+    </div>
+    <div class="badge-wrap" id="badgeWrap"></div>
+    <div id="reviewSection">
+      <h4>Nội dung cần ôn lại</h4>
+      <ul class="review-list" id="reviewList"></ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🚪 Exit Ticket</h3>
+    <p style="font-size:.88rem;">Viết 2 câu ngắn: <strong>(1)</strong> điều em hiểu rõ hơn sau tiết học; <strong>(2)</strong> điều em cần nhớ khi chọn phần mềm hoặc sử dụng AI.</p>
+    <textarea class="essay" id="exitTicket" style="min-height:90px;" placeholder="Ví dụ: Em hiểu rằng... / Em cần nhớ rằng..."></textarea>
+    <div class="wordcount"><span id="exitWc">0</span> từ · được lưu tự động</div>
+  </div>
+  <div class="card" id="sheetSubmitCard">
+    <h3>📤 Gửi kết quả cho giáo viên</h3>
+    <p style="font-size:.88rem;">Kết quả sẽ được gửi vào Google Sheet của giáo viên. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và hoàn thành Exit Ticket trước khi gửi.</p>
+    <div class="grid2" style="margin-bottom:12px;">
+      <div class="concept-card"><h4>👤 Học sinh</h4><p id="submitStudentInfo">Chưa nhập thông tin</p></div>
+      <div class="concept-card"><h4>📊 Kết quả</h4><p id="submitResultInfo">Chưa hoàn thành</p></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn btn-accent" id="sendSheetBtn">📤 Gửi kết quả</button>
+    </div>
+    <div class="feedback" id="sheetSubmitFeedback"></div>
+  </div>
+
+  <div class="card remember">
+    <h3>📌 Ghi nhớ cuối bài</h3>
+    <ul>
+      <li>Hệ điều hành quản lí và điều khiển hoạt động của máy tính.</li>
+      <li>Phần mềm ứng dụng giúp thực hiện những công việc cụ thể.</li>
+      <li>Phần mềm ứng dụng phải phù hợp với hệ điều hành.</li>
+      <li>Phần mở rộng giúp nhận biết loại tệp.</li>
+      <li>Kết quả do AI tạo ra cần được kiểm tra trước khi sử dụng.</li>
+    </ul>
+  </div>
+  <div class="btnrow">
+    <button class="btn btn-primary" id="printBtn">🖨️ In kết quả</button>
+    <button class="btn btn-ghost" id="relearnBtn">Học lại</button>
+    <button class="btn btn-ghost" id="wipeBtn" style="color:var(--color-error);border-color:var(--color-error);">Xóa dữ liệu và bắt đầu lại</button>
+  </div>
+</section>
+
+<!-- ============ THANH CÔNG CỤ GIÁO VIÊN ============ -->
+<button id="teacherbartoggle" title="Công cụ giáo viên" aria-label="Mở công cụ giáo viên">🛠️</button>
+<div id="teacherbar">
+  <div id="teacherbar-label">CÔNG CỤ GIÁO VIÊN · TIẾT 2</div>
+  <button id="toggleAnswersBtn">👁️ Hiện đáp án</button>
+  <button id="tbFullscreen">⛶ Toàn màn hình</button>
+  <button id="tbResetCurrent">↺ Đặt lại hoạt động hiện tại</button>
+  <button id="tbResetAll">🗑️ Đặt lại toàn bộ bài học</button>
+  <button id="tbPrint">🖨️ In kết quả học tập</button>
+</div>
+
+<script>
+'use strict';
+/* ============================================================
+   DỮ LIỆU BÀI HỌC – GIÁO VIÊN CÓ THỂ CHỈNH SỬA TẠI ĐÂY
+   ============================================================ */
+
+const SECTIONS = [
+  {id:'home', label:'Trang chủ'},
+  {id:'apps', label:'1. Ứng dụng'},
+  {id:'compare', label:'2A. Phân biệt'},
+  {id:'ext', label:'2B. Phần mở rộng'},
+  {id:'ai', label:'3A. AI'},
+  {id:'quiz', label:'3B. Luyện tập'},
+  {id:'apply', label:'4. Vận dụng'},
+  {id:'summary', label:'Exit Ticket'}
+];
+const TRACKED_SECTIONS = ['apps','compare','ext','ai','quiz','apply'];
+
+// Câu hỏi khởi động (đúng/sai có giải thích)
+const WARMUP_QUESTIONS = [
+  {text:'1. Hệ điều hành có phải là một thiết bị được gắn vào máy tính không?',
+   options:['Đúng','Sai'], correct:1,
+   explain:'Sai. Hệ điều hành không phải là thiết bị phần cứng, mà là một phần mềm được cài đặt trong máy tính.'},
+  {text:'2. Hệ điều hành là phần cứng hay phần mềm?',
+   options:['Phần cứng','Phần mềm'], correct:1,
+   explain:'Đúng. Hệ điều hành là phần mềm hệ thống, không phải là thiết bị phần cứng.'},
+  {text:'3. Hệ điều hành thường được cài đặt vào thời điểm nào?',
+   options:['Trước khi cài các phần mềm ứng dụng','Sau khi cài các phần mềm ứng dụng'], correct:0,
+   explain:'Đúng. Hệ điều hành thường được cài đặt trước, tạo môi trường để các phần mềm ứng dụng có thể hoạt động sau đó.'},
+  {text:'4. Nếu chưa có hệ điều hành thì các phần mềm ứng dụng có hoạt động được không?',
+   options:['Có thể hoạt động bình thường','Không thể hoạt động'], correct:1,
+   explain:'Đúng. Phần mềm ứng dụng cần một hệ điều hành phù hợp để có môi trường hoạt động, nếu không có hệ điều hành thì không thể chạy được.'}
+];
+
+// Hoạt động phân loại hệ điều hành
+const OS_SORT_ITEMS = ['Windows','macOS','Linux','Android','iOS'];
+const OS_SORT_GROUPS = [
+  {id:'computer', label:'Máy tính', correctItems:['Windows','macOS','Linux']},
+  {id:'mobile', label:'Điện thoại hoặc máy tính bảng', correctItems:['Android','iOS']}
+];
+
+// Trò chơi Ai nhanh hơn
+const RACE_QUESTIONS = [
+  {text:'Windows 1.0 được phát hành vào ngày nào?', type:'single',
+   options:['20/11/1985','15/08/1990','01/01/1981','24/08/1995'], correct:[0],
+   explain:'Windows 1.0 được phát hành vào ngày 20/11/1985.'},
+  {text:'Hãy chọn những tên thuộc các phiên bản của Windows.', type:'multi',
+   options:['Windows 95','Windows XP','Windows 10','Windows Explorer','Windows Media Player'], correct:[0,1,2],
+   explain:'Windows 95, Windows XP, Windows 10 là các phiên bản hệ điều hành Windows. Windows Explorer và Windows Media Player chỉ là phần mềm đi kèm, không phải phiên bản hệ điều hành.'},
+  {text:'Phần mềm nào sau đây không phải hệ điều hành?', type:'single',
+   options:['Windows 7','Windows 10','Windows Explorer','Windows Phone'], correct:[2],
+   explain:'Windows Explorer là trình quản lí tệp, không phải hệ điều hành.'},
+  {text:'Chức năng nào không phải chức năng của hệ điều hành?', type:'single',
+   options:['Quản lí thiết bị phần cứng','Quản lí tệp và dữ liệu','Tạo và chỉnh sửa nội dung một tệp hình ảnh','Cung cấp giao diện người dùng'], correct:[2],
+   explain:'Tạo và chỉnh sửa nội dung một tệp hình ảnh là công việc của phần mềm ứng dụng (ví dụ phần mềm chỉnh sửa ảnh), không phải chức năng của hệ điều hành.'}
+];
+
+// Ví dụ phần mềm ứng dụng
+const APP_EXAMPLES = [
+  {name:'Microsoft Word', use:'Soạn thảo văn bản', ico:'📝'},
+  {name:'Scratch', use:'Lập trình', ico:'🧱'},
+  {name:'Google Chrome / Cốc Cốc', use:'Truy cập web', ico:'🌐'},
+  {name:'Zalo', use:'Liên lạc', ico:'💬'},
+  {name:'Windows Media Player', use:'Phát âm thanh và video', ico:'🎬'},
+  {name:'Google Translate', use:'Hỗ trợ dịch thuật', ico:'🌍'},
+  {name:'ChatGPT', use:'Hỗ trợ tìm hiểu và tạo nội dung', ico:'🤖'}
+];
+
+// Trò chơi Chọn đúng phần mềm (ghép việc - phần mềm)
+const APPS_MATCH_PAIRS = [
+  {task:'Soạn thảo văn bản', software:'Microsoft Word'},
+  {task:'Lập trình cho học sinh', software:'Scratch'},
+  {task:'Truy cập trang web', software:'Chrome / Cốc Cốc'},
+  {task:'Nghe nhạc', software:'Windows Media Player'},
+  {task:'Trao đổi trực tuyến', software:'Zalo'}
+];
+
+// Hoạt động phân loại: hệ điều hành / phần mềm ứng dụng
+const COMPARE_SORT_ITEMS = ['Windows 11','Ubuntu','Android','Microsoft Word','Scratch','Chrome','Zalo','Google Translate'];
+const COMPARE_SORT_GROUPS = [
+  {id:'osgroup', label:'Hệ điều hành', correctItems:['Windows 11','Ubuntu','Android']},
+  {id:'appgroup', label:'Phần mềm ứng dụng', correctItems:['Microsoft Word','Scratch','Chrome','Zalo','Google Translate']}
+];
+
+// Ghép nối phần mở rộng tệp
+const EXT_PAIRS = [
+  {left:'Tài liệu Word', right:'.doc / .docx'},
+  {left:'Chương trình Scratch', right:'.sb / .sb2 / .sb3'},
+  {left:'Hình ảnh', right:'.jpg / .png / .bmp'},
+  {left:'Ứng dụng', right:'.exe / .com / .bat / .msi'},
+  {left:'Trang web', right:'.htm / .html'},
+  {left:'Bài trình bày PowerPoint', right:'.ppt / .pptx'}
+];
+
+// Tình huống AI
+const AI_SCENARIO_OPTIONS = [
+  {text:'Sao chép toàn bộ kết quả và nộp bài ngay để tiết kiệm thời gian.', correct:false,
+   explain:'Chưa phù hợp. Kết quả do AI tạo ra có thể sai, nếu sao chép ngay mà không kiểm tra thì rất dễ mắc lỗi.'},
+  {text:'Đọc lại kết quả, đối chiếu với nguồn đáng tin cậy rồi mới chỉnh sửa và sử dụng.', correct:true,
+   explain:'Đúng. Em nên đọc lại, so sánh với sách giáo khoa hoặc nguồn đáng tin cậy, rồi sửa lại bằng hiểu biết của mình trước khi sử dụng.'},
+  {text:'Không sử dụng AI trong bất kì trường hợp nào.', correct:false,
+   explain:'Chưa hợp lí. AI có thể là công cụ hỗ trợ hữu ích nếu được sử dụng đúng cách và có kiểm tra lại kết quả.'}
+];
+
+const AI_CHECKLIST_ITEMS = [
+  'Tôi đã đọc lại kết quả.',
+  'Tôi đã đối chiếu với nguồn khác.',
+  'Tôi đã sửa nội dung bằng hiểu biết của mình.',
+  'Tôi không sao chép máy móc.',
+  'Tôi không cung cấp thông tin cá nhân.'
+];
+
+// Bài kiểm tra luyện tập
+const QUIZ_QUESTIONS = [
+  {text:'1. Phần mềm nào là phần mềm ứng dụng?', type:'multi',
+   options:['Linux','Gmail','Windows 8','UniKey'], correct:[1,3],
+   explain:'Gmail và UniKey là phần mềm ứng dụng. Linux và Windows 8 là hệ điều hành.'},
+  {text:'2. Đâu là phần mềm hệ thống?', type:'single',
+   options:['Windows 98','Windows Media Player','Windows XP','Cả Windows 98 và Windows XP'], correct:[3],
+   explain:'Windows 98 và Windows XP đều là hệ điều hành (phần mềm hệ thống).'},
+  {text:'3. Windows Media Player có thể mở những loại tệp nào?', type:'multi',
+   options:['.mp3','.jpg','.avi','.txt'], correct:[0,2],
+   explain:'Windows Media Player dùng để phát âm thanh (.mp3) và video (.avi).'},
+  {text:'4. Chức năng nào không phải của hệ điều hành?', type:'single',
+   options:['Quản lí thiết bị phần cứng','Tổ chức thực hiện chương trình','Tạo và chỉnh sửa một tệp hình ảnh','Quản lí tệp và dữ liệu'], correct:[2],
+   explain:'Tạo và chỉnh sửa một tệp hình ảnh là công việc của phần mềm ứng dụng, không phải hệ điều hành.'},
+  {text:'5. Hệ điều hành thuộc loại phần mềm nào?', type:'single',
+   options:['Phần mềm ứng dụng','Phần mềm hệ thống','Phần mềm giải trí','Phần mềm văn phòng'], correct:[1],
+   explain:'Hệ điều hành là phần mềm hệ thống, quản lí và điều khiển hoạt động của máy tính.'},
+  {text:'6. Máy tính cần tối thiểu bao nhiêu hệ điều hành để sử dụng theo cách thông thường?', type:'single',
+   options:['Không cần hệ điều hành nào','Một hệ điều hành','Hai hệ điều hành','Ba hệ điều hành'], correct:[1],
+   explain:'Máy tính cần tối thiểu một hệ điều hành để hoạt động và cho phép các phần mềm ứng dụng chạy.'},
+  {text:'7. Môi trường giúp người dùng trao đổi thông tin với máy tính được gọi là gì?', type:'single',
+   options:['Bộ nhớ','Giao diện','Tệp tin','Ổ đĩa'], correct:[1],
+   explain:'Giao diện là môi trường giúp người dùng trao đổi thông tin, thao tác với máy tính.'}
+];
+
+const BADGE = {icon:'🏅', name:'Nhà khám phá phần mềm'};
+
+/* ============================================================
+   TRẠNG THÁI & LƯU TRỮ
+   ============================================================ */
+const STORAGE_KEY = 'bai02_phanmem_tiet2_45p_v2';
+
+function defaultState(){
+  return {
+    studentName:'',
+    studentClass:'',
+    sheetSubmission:{sent:false,sentAt:''},
+    currentScreen:'home',
+    completed:Object.fromEntries(TRACKED_SECTIONS.map(s=>[s,false])),
+    warmup:{answered:[null,null,null,null]},
+    osSort:{placed:{}},
+    race:{teamA:'Đội A',teamB:'Đội B',scoreA:0,scoreB:0,qIndex:0,timeLeft:120,running:false,turn:null,selected:[],graded:false},
+    appsMatch:{leftSel:null,matched:{}},
+    compareSort:{placed:{}},
+    extMatch:{leftSel:null,matched:{},attempts:0},
+    aiScenario:{choice:null},
+    aiChecklist:[false,false,false,false,false],
+    quiz:{answers:{},submitted:false,score:0},
+    apply:{essay1:'',essay2:'',saved1:false,saved2:false,hint1:false,hint2:false},
+    exitTicket:'',
+    soundOn:true,
+    answersVisible:false
+  };
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    if(typeof parsed !== 'object' || parsed===null) return defaultState();
+    // hợp nhất với mặc định để tránh thiếu trường khi nâng cấp
+    return Object.assign(defaultState(), parsed);
+  }catch(e){
+    console.warn('Không đọc được dữ liệu đã lưu, dùng dữ liệu mặc định.', e);
+    return defaultState();
+  }
+}
+
+let STATE = loadState();
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE));
+  }catch(e){
+    console.warn('Không thể lưu tiến độ vào bộ nhớ trình duyệt.', e);
+  }
+}
+
+/* ============================================================
+   ÂM THANH PHẢN HỒI (WebAudio, không cần tệp ngoài)
+   ============================================================ */
+let audioCtx = null;
+function beep(type){
+  if(!STATE.soundOn) return;
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = type==='ok' ? 880 : 220;
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime+0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.25);
+    osc.start(); osc.stop(audioCtx.currentTime+0.26);
+  }catch(e){ /* im lặng nếu trình duyệt chặn âm thanh */ }
+}
+
+/* ============================================================
+   GAME MODE – XP, HUY HIỆU, MISSION MAP, MASCOT
+   ============================================================ */
+const XP_BY_SECTION = {apps:15, compare:15, ext:20, ai:15, quiz:15, apply:20};
+const SECTION_GAME_NAME = {
+  apps:'Software Hunter',
+  compare:'Sorting Battle',
+  ext:'File Detective',
+  ai:'AI Guardian',
+  quiz:'Knowledge Rush',
+  apply:'Final Rescue'
+};
+
+function getXP(){
+  return TRACKED_SECTIONS.reduce((sum,id)=>sum+(STATE.completed[id]?(XP_BY_SECTION[id]||0):0),0);
+}
+function badgeState(){
+  return {
+    software: !!(STATE.completed.apps && STATE.completed.compare),
+    file: !!STATE.completed.ext,
+    ai: !!(STATE.completed.ai && STATE.completed.quiz),
+    hero: !!TRACKED_SECTIONS.every(id=>STATE.completed[id])
+  };
+}
+function missionState(){
+  return {
+    1: !!(STATE.completed.apps && STATE.completed.compare),
+    2: !!STATE.completed.ext,
+    3: !!(STATE.completed.ai && STATE.completed.quiz),
+    4: !!STATE.completed.apply
+  };
+}
+function currentMission(){
+  const m=missionState();
+  if(!m[1]) return 1;
+  if(!m[2]) return 2;
+  if(!m[3]) return 3;
+  if(!m[4]) return 4;
+  return 4;
+}
+function updateGameHUD(){
+  const xp=getXP();
+  const xpEl=document.getElementById('xpHUD');
+  if(xpEl) xpEl.textContent=`⭐ ${xp} XP`;
+
+  const badges=badgeState();
+  document.querySelectorAll('.game-badge[data-badge]').forEach(el=>{
+    el.classList.toggle('unlocked',!!badges[el.dataset.badge]);
+  });
+
+  const ms=missionState();
+  const active=currentMission();
+  document.querySelectorAll('.mission-node[data-mission]').forEach(el=>{
+    const n=Number(el.dataset.mission);
+    el.classList.toggle('done',!!ms[n]);
+    el.classList.toggle('active',!ms[n] && n===active);
+  });
+
+  const bubble=document.getElementById('mascotBubble');
+  if(bubble){
+    const messages={
+      home:'Chào mừng đến DATA LAB! Nhập tên và lớp rồi bắt đầu nhiệm vụ nhé.',
+      apps:'Mission 1 bắt đầu! Hãy chọn đúng phần mềm cho từng công việc.',
+      compare:'Sắp xếp thật chính xác để mở khóa kho dữ liệu.',
+      ext:'Thám tử tệp tin: chú ý phần sau dấu chấm nhé!',
+      ai:'Đừng tin AI ngay lập tức. Kiểm tra – đối chiếu – xác thực!',
+      quiz:'Knowledge Rush! Bình tĩnh đọc kỹ từng câu.',
+      apply:'Vòng cuối rồi! Hãy giải thích bằng hiểu biết của chính em.',
+      summary: badges.hero?'Xuất sắc! Em đã trở thành DATA LAB HERO!':'Victory Room đây rồi. Hoàn thành nốt phần còn thiếu nhé.'
+    };
+    bubble.textContent=messages[STATE.currentScreen]||'Tiếp tục khám phá DATA LAB nhé!';
+  }
+
+  const victoryText=document.getElementById('victoryText');
+  if(victoryText){
+    victoryText.textContent=badges.hero
+      ? `Tuyệt vời, ${STATE.studentName||'em'}! Em đã hoàn thành 4 mission và đạt ${xp}/100 XP.`
+      : `Em đang có ${xp}/100 XP. Hãy hoàn thành những nhiệm vụ còn thiếu để mở khóa DATA LAB HERO.`;
+  }
+}
+let gameToastTimer=null;
+function showGameToast(title,detail=''){
+  const el=document.getElementById('gameToast');
+  if(!el) return;
+  el.innerHTML=`${title}${detail?`<small>${detail}</small>`:''}`;
+  el.classList.add('show');
+  clearTimeout(gameToastTimer);
+  gameToastTimer=setTimeout(()=>el.classList.remove('show'),2600);
+}
+function launchConfetti(count=34){
+  const palette=['#4f46e5','#06b6d4','#f59e0b','#ec4899','#22c55e','#8b5cf6'];
+  for(let i=0;i<count;i++){
+    const p=document.createElement('span');
+    p.className='confetti-piece';
+    p.style.left=(Math.random()*100)+'vw';
+    p.style.background=palette[Math.floor(Math.random()*palette.length)];
+    p.style.setProperty('--drift',((Math.random()-.5)*160)+'px');
+    p.style.animationDelay=(Math.random()*.35)+'s';
+    p.style.transform=`rotate(${Math.random()*180}deg)`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2200);
+  }
+}
+function completionMessage(sectionId){
+  const xp=XP_BY_SECTION[sectionId]||0;
+  return {title:`✨ ${SECTION_GAME_NAME[sectionId]||'Nhiệm vụ'} hoàn thành!`,detail:`+${xp} XP · Tiếp tục mở khóa DATA LAB`};
+}
+
+/* ============================================================
+   ĐIỀU HƯỚNG & TIẾN ĐỘ
+   ============================================================ */
+const navlist = document.getElementById('navlist');
+SECTIONS.forEach(s=>{
+  const b = document.createElement('button');
+  b.className='navbtn'; b.textContent=s.label; b.dataset.section=s.id;
+  b.setAttribute('role','tab');
+  b.addEventListener('click',()=>{ showScreen(s.id); document.getElementById('navlist').classList.remove('open'); });
+  navlist.appendChild(b);
+});
+
+function updateNavUI(){
+  document.querySelectorAll('.navbtn').forEach(b=>{
+    const id=b.dataset.section;
+    b.classList.toggle('active', id===STATE.currentScreen);
+    b.classList.toggle('done', !!STATE.completed[id]);
+  });
+  const doneCount = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
+  const pct = Math.round(doneCount/TRACKED_SECTIONS.length*100);
+  document.getElementById('progressfill').style.width = pct+'%';
+  updateGameHUD();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
+  const el = document.getElementById('screen-'+id);
+  if(el) el.classList.add('active');
+  STATE.currentScreen = id;
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateNavUI();
+  saveState();
+  if(id==='summary'){
+    renderSummary();
+    if(TRACKED_SECTIONS.every(s=>STATE.completed[s]) && !window.__dataLabVictoryShown){
+      window.__dataLabVictoryShown=true;
+      setTimeout(()=>{ launchConfetti(52); showGameToast('🏆 DATA LAB COMPLETED!','Em đã mở khóa toàn bộ nhiệm vụ.'); },350);
+    }
+  }
+  updateGameHUD();
+}
+
+document.querySelectorAll('[data-goto]').forEach(b=>{
+  b.addEventListener('click',()=> showScreen(b.dataset.goto));
+});
+
+document.getElementById('navtoggle').addEventListener('click',()=>{
+  document.getElementById('navlist').classList.toggle('open');
+});
+
+function markComplete(sectionId){
+  if(TRACKED_SECTIONS.includes(sectionId) && !STATE.completed[sectionId]){
+    const before=badgeState();
+    STATE.completed[sectionId]=true;
+    saveState();
+    updateNavUI();
+    const msg=completionMessage(sectionId);
+    showGameToast(msg.title,msg.detail);
+    launchConfetti(16);
+    const after=badgeState();
+    if(!before.software && after.software) setTimeout(()=>showGameToast('🏅 Huy hiệu mới: Software Spotter','Em đã phân biệt và lựa chọn phần mềm tốt.'),800);
+    if(!before.file && after.file) setTimeout(()=>showGameToast('🏅 Huy hiệu mới: File Detective','Em đã giải mã được phần mở rộng tệp.'),800);
+    if(!before.ai && after.ai) setTimeout(()=>showGameToast('🏅 Huy hiệu mới: AI Guardian','Em biết dùng AI có trách nhiệm.'),800);
+    if(!before.hero && after.hero) setTimeout(()=>{showGameToast('🏆 Huy hiệu mới: DATA LAB HERO','100 XP · Hoàn thành toàn bộ nhiệm vụ!');launchConfetti(60);},900);
+  }
+}
+
+/* ============================================================
+   1. TRANG CHỦ
+   ============================================================ */
+const nameInput = document.getElementById('studentNameInput');
+const classInput = document.getElementById('studentClassInput');
+nameInput.value = STATE.studentName || '';
+classInput.value = STATE.studentClass || '';
+nameInput.addEventListener('input',()=>{ STATE.studentName = nameInput.value; saveState(); });
+classInput.addEventListener('input',()=>{ STATE.studentClass = classInput.value; saveState(); });
+document.getElementById('startBtn').addEventListener('click',()=>{
+  STATE.studentName = nameInput.value.trim();
+  STATE.studentClass = classInput.value.trim();
+  saveState();
+  if(!STATE.studentName){
+    alert('Em hãy nhập họ và tên trước khi bắt đầu.');
+    nameInput.focus();
+    return;
+  }
+  if(!STATE.studentClass){
+    alert('Em hãy nhập lớp trước khi bắt đầu.');
+    classInput.focus();
+    return;
+  }
+  showScreen('apps');
+});
+
+/* ============================================================
+   2. KHỞI ĐỘNG
+   ============================================================ */
+function renderWarmup(){
+  const wrap = document.getElementById('warmupQuestions');
+  wrap.innerHTML='';
+  WARMUP_QUESTIONS.forEach((q,qi)=>{
+    const card = document.createElement('div'); card.className='qcard';
+    const qt = document.createElement('div'); qt.className='qtext'; qt.textContent=q.text;
+    card.appendChild(qt);
+    const list = document.createElement('div'); list.className='optlist';
+    q.options.forEach((opt,oi)=>{
+      const b = document.createElement('button'); b.className='optbtn'; b.textContent=opt;
+      const ans = STATE.warmup.answered[qi];
+      if(ans!==null){
+        b.disabled=true;
+        if(oi===q.correct) b.classList.add('correct');
+        else if(oi===ans) b.classList.add('wrong');
+      }
+      b.addEventListener('click',()=>{
+        if(STATE.warmup.answered[qi]!==null) return;
+        STATE.warmup.answered[qi]=oi;
+        saveState();
+        beep(oi===q.correct?'ok':'no');
+        renderWarmup();
+        if(STATE.warmup.answered.every(a=>a!==null)) markComplete('warmup');
+      });
+      list.appendChild(b);
+    });
+    card.appendChild(list);
+    if(STATE.warmup.answered[qi]!==null){
+      const fb=document.createElement('div'); fb.className='feedback show '+(STATE.warmup.answered[qi]===q.correct?'ok':'no');
+      fb.textContent=q.explain;
+      card.appendChild(fb);
+    }
+    wrap.appendChild(card);
+  });
+}
+
+// Video: hiện khung thay thế nếu chưa có nguồn video
+function checkVideoSource(){
+  const video = document.getElementById('lessonVideo');
+  const placeholder = document.getElementById('videoPlaceholder');
+  const hasSource = video.querySelector('source') && video.querySelector('source').getAttribute('src');
+  if(hasSource){ video.style.display='block'; placeholder.style.display='none'; }
+  else { video.style.display='none'; placeholder.style.display='block'; }
+}
+
+/* ============================================================
+   HOẠT ĐỘNG PHÂN LOẠI DÙNG CHUNG (chọn rồi đặt vào nhóm)
+   ============================================================ */
+function renderSortGame(container, items, groups, stateObj, onChangeCallback){
+  container.innerHTML='';
+  const wrap = document.createElement('div'); wrap.className='sortwrap';
+
+  const pool = document.createElement('div'); pool.className='sortpool';
+  const remaining = items.filter(it=> !stateObj.placed[it]);
+  if(remaining.length===0){
+    const done = document.createElement('div'); done.style.fontSize='.85rem'; done.style.color='var(--color-ink-soft)';
+    done.textContent='Tất cả đã được xếp. Nhấn "Kiểm tra" để xem kết quả.';
+    pool.appendChild(done);
+  }
+  remaining.forEach(it=>{
+    const b=document.createElement('button'); b.className='sortitem'; b.textContent=it;
+    if(stateObj._picked===it) b.classList.add('picked');
+    b.addEventListener('click',()=>{
+      stateObj._picked = (stateObj._picked===it) ? null : it;
+      renderSortGame(container, items, groups, stateObj, onChangeCallback);
+    });
+    pool.appendChild(b);
+  });
+  wrap.appendChild(pool);
+
+  const groupWrap = document.createElement('div'); groupWrap.className='sortgroups';
+  groups.forEach(g=>{
+    const gEl = document.createElement('div'); gEl.className='sortgroup';
+    const h = document.createElement('h4'); h.textContent=g.label; gEl.appendChild(h);
+    gEl.addEventListener('click',(e)=>{
+      if(e.target.closest('.placeditem')) return;
+      if(!stateObj._picked) return;
+      stateObj.placed[stateObj._picked]=g.id;
+      stateObj._picked=null;
+      saveState();
+      renderSortGame(container, items, groups, stateObj, onChangeCallback);
+      if(onChangeCallback) onChangeCallback();
+    });
+    const placedWrap = document.createElement('div'); placedWrap.className='placed';
+    Object.keys(stateObj.placed).filter(k=>stateObj.placed[k]===g.id).forEach(it=>{
+      const chip=document.createElement('span'); chip.className='placeditem';
+      if(stateObj._checked){
+        const isCorrect = g.correctItems.includes(it);
+        chip.classList.add(isCorrect?'ok':'no');
+      }
+      const label=document.createElement('span'); label.textContent=it; chip.appendChild(label);
+      const rm=document.createElement('button'); rm.textContent='✕'; rm.setAttribute('aria-label','Bỏ khỏi nhóm');
+      rm.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        delete stateObj.placed[it];
+        stateObj._checked=false;
+        saveState();
+        renderSortGame(container, items, groups, stateObj, onChangeCallback);
+      });
+      chip.appendChild(rm);
+      placedWrap.appendChild(chip);
+    });
+    gEl.appendChild(placedWrap);
+    groupWrap.appendChild(gEl);
+  });
+  wrap.appendChild(groupWrap);
+
+  const btnrow=document.createElement('div'); btnrow.className='btnrow';
+  const checkBtn=document.createElement('button'); checkBtn.className='btn btn-accent'; checkBtn.textContent='Kiểm tra';
+  checkBtn.disabled = Object.keys(stateObj.placed).length < items.length;
+  checkBtn.addEventListener('click',()=>{
+    stateObj._checked=true;
+    const allCorrect = items.every(it=>{
+      const g = groups.find(gr=>gr.id===stateObj.placed[it]);
+      return g && g.correctItems.includes(it);
+    });
+    beep(allCorrect?'ok':'no');
+    saveState();
+    renderSortGame(container, items, groups, stateObj, onChangeCallback);
+    if(allCorrect && onChangeCallback) onChangeCallback(true);
+  });
+  const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
+  resetBtn.addEventListener('click',()=>{
+    stateObj.placed={}; stateObj._checked=false; stateObj._picked=null;
+    saveState();
+    renderSortGame(container, items, groups, stateObj, onChangeCallback);
+  });
+  btnrow.appendChild(checkBtn); btnrow.appendChild(resetBtn);
+  wrap.appendChild(btnrow);
+
+  if(stateObj._checked){
+    const allCorrect = items.every(it=>{
+      const g = groups.find(gr=>gr.id===stateObj.placed[it]);
+      return g && g.correctItems.includes(it);
+    });
+    const fb=document.createElement('div'); fb.className='feedback show '+(allCorrect?'ok':'no');
+    fb.textContent = allCorrect ? 'Chính xác! Em đã xếp đúng tất cả.' : 'Một vài mục chưa đúng nhóm — hãy xem các thẻ có dấu ✕ màu đỏ và thử lại.';
+    wrap.appendChild(fb);
+  }
+  container.appendChild(wrap);
+}
+
+/* ============================================================
+   3. HỆ ĐIỀU HÀNH — phân loại + trò chơi Ai nhanh hơn
+   ============================================================ */
+function renderOsSort(){
+  const container = document.getElementById('osSortGame');
+  renderSortGame(container, OS_SORT_ITEMS, OS_SORT_GROUPS, STATE.osSort, (allCorrect)=>{
+    if(allCorrect) markComplete('os');
+  });
+}
+
+function renderRaceGame(){
+  const c = document.getElementById('raceGame');
+  const r = STATE.race;
+  c.innerHTML='';
+
+  const teamRow=document.createElement('div'); teamRow.className='teamrow';
+  const boxA=document.createElement('div'); boxA.className='teambox'+(r.turn==='A'?' turn':'');
+  const inputA=document.createElement('input'); inputA.value=r.teamA; inputA.addEventListener('input',()=>{r.teamA=inputA.value;saveState();});
+  const scoreA=document.createElement('div'); scoreA.className='teamscore'; scoreA.textContent=r.scoreA;
+  boxA.appendChild(inputA); boxA.appendChild(scoreA);
+
+  const timerBox=document.createElement('div'); timerBox.className='timerbox';
+  const mm=String(Math.floor(r.timeLeft/60)).padStart(2,'0');
+  const ss=String(r.timeLeft%60).padStart(2,'0');
+  timerBox.textContent=mm+':'+ss;
+
+  const boxB=document.createElement('div'); boxB.className='teambox'+(r.turn==='B'?' turn':'');
+  const inputB=document.createElement('input'); inputB.value=r.teamB; inputB.addEventListener('input',()=>{r.teamB=inputB.value;saveState();});
+  const scoreB=document.createElement('div'); scoreB.className='teamscore'; scoreB.textContent=r.scoreB;
+  boxB.appendChild(inputB); boxB.appendChild(scoreB);
+
+  teamRow.appendChild(boxA); teamRow.appendChild(timerBox); teamRow.appendChild(boxB);
+  c.appendChild(teamRow);
+
+  const ctrlRow=document.createElement('div'); ctrlRow.className='btnrow';
+  const startBtn=document.createElement('button'); startBtn.className='btn btn-primary';
+  startBtn.textContent = r.running? '⏸ Tạm dừng':'▶ Bắt đầu';
+  startBtn.addEventListener('click',()=>{
+    r.running = !r.running;
+    saveState();
+    renderRaceGame();
+  });
+  const nextBtn=document.createElement('button'); nextBtn.className='btn btn-ghost'; nextBtn.textContent='Câu tiếp theo';
+  nextBtn.addEventListener('click',()=>{
+    if(r.qIndex < RACE_QUESTIONS.length-1){ r.qIndex++; } else { r.qIndex=0; }
+    r.turn=null; r.selected=[]; r.graded=false;
+    saveState(); renderRaceGame();
+  });
+  const replayBtn=document.createElement('button'); replayBtn.className='btn btn-ghost'; replayBtn.textContent='Chơi lại';
+  replayBtn.addEventListener('click',()=>{
+    STATE.race = defaultState().race;
+    STATE.race.teamA=r.teamA; STATE.race.teamB=r.teamB;
+    saveState(); renderRaceGame();
+  });
+  ctrlRow.appendChild(startBtn); ctrlRow.appendChild(nextBtn); ctrlRow.appendChild(replayBtn);
+  c.appendChild(ctrlRow);
+
+  if(!r.turn){
+    const pick=document.createElement('div'); pick.className='turnpick';
+    pick.innerHTML='<span style="align-self:center;font-size:.85rem;color:var(--color-ink-soft);">Đội nào trả lời trước?</span>';
+    ['A','B'].forEach(t=>{
+      const b=document.createElement('button'); b.className='btn btn-ghost'; b.textContent='Đội '+t+' trả lời';
+      b.addEventListener('click',()=>{ r.turn=t; saveState(); renderRaceGame(); });
+      pick.appendChild(b);
+    });
+    c.appendChild(pick);
+    return;
+  }
+
+  const q = RACE_QUESTIONS[r.qIndex];
+  const qCard=document.createElement('div'); qCard.className='qcard';
+  const qHead=document.createElement('div'); qHead.style.fontSize='.8rem'; qHead.style.color='var(--color-ink-soft)';
+  qHead.textContent='Câu '+(r.qIndex+1)+'/'+RACE_QUESTIONS.length+' — Đội '+(r.turn==='A'?r.teamA:r.teamB)+' đang trả lời';
+  qCard.appendChild(qHead);
+  const qt=document.createElement('div'); qt.className='qtext'; qt.textContent=q.text; qCard.appendChild(qt);
+  const list=document.createElement('div'); list.className='optlist';
+  q.options.forEach((opt,oi)=>{
+    const b=document.createElement('button'); b.className='optbtn'; b.textContent=opt;
+    if(r.selected.includes(oi)) b.classList.add('selected');
+    if(r.graded){
+      b.disabled=true;
+      if(q.correct.includes(oi)) b.classList.add('correct');
+      else if(r.selected.includes(oi)) b.classList.add('wrong');
+    }
+    b.addEventListener('click',()=>{
+      if(r.graded) return;
+      if(q.type==='single'){ r.selected=[oi]; }
+      else{
+        const idx=r.selected.indexOf(oi);
+        if(idx>-1) r.selected.splice(idx,1); else r.selected.push(oi);
+      }
+      saveState(); renderRaceGame();
+    });
+    list.appendChild(b);
+  });
+  qCard.appendChild(list);
+  c.appendChild(qCard);
+
+  if(!r.graded){
+    const confirmRow=document.createElement('div'); confirmRow.className='btnrow';
+    const confirmBtn=document.createElement('button'); confirmBtn.className='btn btn-accent'; confirmBtn.textContent='Xác nhận đáp án';
+    confirmBtn.disabled = r.selected.length===0;
+    confirmBtn.addEventListener('click',()=>{
+      const sortedSel=[...r.selected].sort();
+      const sortedCorrect=[...q.correct].sort();
+      const isCorrect = sortedSel.length===sortedCorrect.length && sortedSel.every((v,i)=>v===sortedCorrect[i]);
+      r.graded=true;
+      if(isCorrect){ if(r.turn==='A') r.scoreA+=10; else r.scoreB+=10; }
+      beep(isCorrect?'ok':'no');
+      saveState(); renderRaceGame();
+      markComplete('os');
+    });
+    confirmRow.appendChild(confirmBtn);
+    c.appendChild(confirmRow);
+  } else {
+    const fb=document.createElement('div'); fb.className='feedback show ok'; fb.textContent=q.explain;
+    c.appendChild(fb);
+  }
+}
+
+let raceTimerHandle=null;
+function tickRaceTimer(){
+  if(STATE.race.running && STATE.race.timeLeft>0){
+    STATE.race.timeLeft--;
+    if(STATE.race.timeLeft===0){ STATE.race.running=false; }
+    saveState();
+    if(STATE.currentScreen==='os') renderRaceGame();
+  }
+}
+raceTimerHandle = setInterval(tickRaceTimer,1000);
+
+/* ============================================================
+   4. PHẦN MỀM ỨNG DỤNG — ví dụ + trò chơi ghép việc/phần mềm
+   ============================================================ */
+function renderAppExamples(){
+  const wrap = document.getElementById('appExamples');
+  wrap.innerHTML='';
+  APP_EXAMPLES.forEach(a=>{
+    const c=document.createElement('div'); c.className='concept-card';
+    c.innerHTML='<h4>'+a.ico+' '+a.name+'</h4><p>'+a.use+'</p>';
+    wrap.appendChild(c);
+  });
+}
+
+function renderAppsMatch(){
+  const c = document.getElementById('appsMatchGame');
+  const s = STATE.appsMatch;
+  c.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='matchwrap';
+
+  const leftCol=document.createElement('div'); leftCol.className='matchcol';
+  leftCol.innerHTML='<h4>Công việc</h4>';
+  APPS_MATCH_PAIRS.forEach((p,i)=>{
+    const b=document.createElement('button'); b.className='matchitem'; b.textContent=p.task;
+    const isMatched = s.matched[i]!==undefined;
+    if(isMatched) b.classList.add('matched');
+    if(s.leftSel===i) b.classList.add('sel');
+    b.disabled = isMatched;
+    b.addEventListener('click',()=>{ s.leftSel=i; saveState(); renderAppsMatch(); });
+    leftCol.appendChild(b);
+  });
+  wrap.appendChild(leftCol);
+
+  const rightCol=document.createElement('div'); rightCol.className='matchcol';
+  rightCol.innerHTML='<h4>Phần mềm</h4>';
+  const shuffledRight = APPS_MATCH_PAIRS.map((p,i)=>({label:p.software,origIndex:i}));
+  shuffledRight.forEach(item=>{
+    const alreadyUsed = Object.values(s.matched).includes(item.origIndex);
+    const b=document.createElement('button'); b.className='matchitem'; b.textContent=item.label;
+    if(alreadyUsed) b.classList.add('matched');
+    b.disabled = alreadyUsed;
+    b.addEventListener('click',()=>{
+      if(s.leftSel===null || s.leftSel===undefined) return;
+      s.matched[s.leftSel]=item.origIndex;
+      const wasCorrect = s.leftSel===item.origIndex;
+      beep(wasCorrect?'ok':'no');
+      s.leftSel=null;
+      saveState(); renderAppsMatch();
+      if(Object.keys(s.matched).length===APPS_MATCH_PAIRS.length) markComplete('apps');
+    });
+    rightCol.appendChild(b);
+  });
+  wrap.appendChild(rightCol);
+  c.appendChild(wrap);
+
+  const total=APPS_MATCH_PAIRS.length;
+  const correctCount = Object.entries(s.matched).filter(([k,v])=>Number(k)===v).length;
+  const info=document.createElement('p'); info.style.fontWeight='700'; info.style.marginTop='12px';
+  info.textContent = 'Đã ghép: '+Object.keys(s.matched).length+'/'+total+' — Đúng: '+correctCount+'/'+total;
+  c.appendChild(info);
+
+  const btnrow=document.createElement('div'); btnrow.className='btnrow';
+  const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
+  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; saveState(); renderAppsMatch(); });
+  btnrow.appendChild(resetBtn);
+  c.appendChild(btnrow);
+}
+
+/* ============================================================
+   5. PHÂN BIỆT — phân loại hệ điều hành / phần mềm ứng dụng
+   ============================================================ */
+function renderCompareSort(){
+  const container = document.getElementById('compareSortGame');
+  renderSortGame(container, COMPARE_SORT_ITEMS, COMPARE_SORT_GROUPS, STATE.compareSort, (allCorrect)=>{
+    if(allCorrect) markComplete('compare');
+  });
+}
+
+/* ============================================================
+   6. PHẦN MỞ RỘNG TỆP — ghép nối
+   ============================================================ */
+function renderExtMatch(){
+  const c = document.getElementById('extMatchGame');
+  const s = STATE.extMatch;
+  c.innerHTML='';
+  const wrap=document.createElement('div'); wrap.className='matchwrap';
+
+  const leftCol=document.createElement('div'); leftCol.className='matchcol';
+  leftCol.innerHTML='<h4>Loại tệp</h4>';
+  EXT_PAIRS.forEach((p,i)=>{
+    const isMatched = s.matched[i]!==undefined;
+    const b=document.createElement('button'); b.className='matchitem'; b.textContent=p.left;
+    if(isMatched) b.classList.add('matched');
+    if(s.leftSel===i) b.classList.add('sel');
+    b.disabled = isMatched;
+    b.addEventListener('click',()=>{ s.leftSel=i; saveState(); renderExtMatch(); });
+    leftCol.appendChild(b);
+  });
+  wrap.appendChild(leftCol);
+
+  const rightCol=document.createElement('div'); rightCol.className='matchcol';
+  rightCol.innerHTML='<h4>Phần mở rộng</h4>';
+  EXT_PAIRS.forEach((p,i)=>{
+    const alreadyUsed = Object.values(s.matched).includes(i);
+    const b=document.createElement('button'); b.className='matchitem'; b.textContent=p.right;
+    if(alreadyUsed) b.classList.add('matched');
+    b.disabled = alreadyUsed;
+    b.addEventListener('click',()=>{
+      if(s.leftSel===null || s.leftSel===undefined) return;
+      s.matched[s.leftSel]=i;
+      s.attempts++;
+      beep(s.leftSel===i?'ok':'no');
+      s.leftSel=null;
+      saveState(); renderExtMatch();
+      if(Object.keys(s.matched).length===EXT_PAIRS.length) markComplete('ext');
+    });
+    rightCol.appendChild(b);
+  });
+  wrap.appendChild(rightCol);
+  c.appendChild(wrap);
+
+  const total=EXT_PAIRS.length;
+  const correctCount = Object.entries(s.matched).filter(([k,v])=>Number(k)===v).length;
+  document.getElementById('extScore').textContent = 'Đã ghép: '+Object.keys(s.matched).length+'/'+total+' — Cặp đúng: '+correctCount+'/'+total;
+
+  const btnrow=document.createElement('div'); btnrow.className='btnrow';
+  const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
+  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; s.attempts=0; saveState(); renderExtMatch(); });
+  btnrow.appendChild(resetBtn);
+  c.appendChild(btnrow);
+}
+
+/* ============================================================
+   7. AI CÓ TRÁCH NHIỆM — tình huống + checklist
+   ============================================================ */
+function renderAiScenario(){
+  const wrap = document.getElementById('aiScenarioOptions');
+  wrap.innerHTML='';
+  const chosen = STATE.aiScenario.choice;
+  AI_SCENARIO_OPTIONS.forEach((opt,i)=>{
+    const b=document.createElement('button'); b.className='optbtn'; b.textContent=opt.text;
+    if(chosen!==null && chosen!==undefined){
+      b.disabled=true;
+      if(opt.correct) b.classList.add('correct');
+      else if(i===chosen) b.classList.add('wrong');
+    }
+    b.addEventListener('click',()=>{
+      if(STATE.aiScenario.choice!==null && STATE.aiScenario.choice!==undefined) return;
+      STATE.aiScenario.choice=i;
+      beep(opt.correct?'ok':'no');
+      saveState();
+      renderAiScenario();
+    });
+    wrap.appendChild(b);
+  });
+  const fb=document.getElementById('aiScenarioFeedback');
+  if(chosen!==null && chosen!==undefined){
+    fb.className='feedback show '+(AI_SCENARIO_OPTIONS[chosen].correct?'ok':'no');
+    fb.textContent = AI_SCENARIO_OPTIONS[chosen].explain;
+  } else {
+    fb.className='feedback';
+  }
+}
+
+function renderAiChecklist(){
+  const wrap = document.getElementById('aiChecklist');
+  wrap.className='checklist';
+  wrap.innerHTML='';
+  AI_CHECKLIST_ITEMS.forEach((text,i)=>{
+    const label=document.createElement('label');
+    const input=document.createElement('input'); input.type='checkbox'; input.checked=!!STATE.aiChecklist[i];
+    input.addEventListener('change',()=>{
+      STATE.aiChecklist[i]=input.checked;
+      saveState();
+      if(STATE.aiChecklist.every(v=>v) && STATE.aiScenario.choice!==null && STATE.aiScenario.choice!==undefined){
+        markComplete('ai');
+      }
+    });
+    const span=document.createElement('span'); span.textContent=text;
+    label.appendChild(input); label.appendChild(span);
+    wrap.appendChild(label);
+  });
+}
+
+/* ============================================================
+   8. LUYỆN TẬP — bài kiểm tra 7 câu
+   ============================================================ */
+function renderQuiz(){
+  const wrap = document.getElementById('quizQuestions');
+  wrap.innerHTML='';
+  const q = STATE.quiz;
+  const submitted = q.submitted;
+
+  QUIZ_QUESTIONS.forEach((question,qi)=>{
+    const card=document.createElement('div'); card.className='qcard';
+    const qt=document.createElement('div'); qt.className='qtext'; qt.textContent=question.text +
+      (question.type==='multi' ? '  (có thể chọn nhiều đáp án)' : '');
+    card.appendChild(qt);
+    const list=document.createElement('div'); list.className='optlist';
+    const userAns = q.answers[qi] || [];
+    question.options.forEach((opt,oi)=>{
+      const b=document.createElement('button'); b.className='optbtn'; b.textContent=opt;
+      if(userAns.includes(oi)) b.classList.add('selected');
+      if(submitted){
+        b.disabled=true;
+        if(question.correct.includes(oi)) b.classList.add('correct');
+        else if(userAns.includes(oi)) b.classList.add('wrong');
+      }
+      b.addEventListener('click',()=>{
+        if(submitted) return;
+        let arr = q.answers[qi] || [];
+        if(question.type==='single'){ arr=[oi]; }
+        else{
+          const idx=arr.indexOf(oi);
+          if(idx>-1) arr=arr.filter(v=>v!==oi); else arr=[...arr,oi];
+        }
+        q.answers[qi]=arr;
+        saveState();
+        renderQuiz();
+      });
+      list.appendChild(b);
+    });
+    card.appendChild(list);
+    if(submitted){
+      const sortedU=[...userAns].sort(); const sortedC=[...question.correct].sort();
+      const isCorrect = sortedU.length===sortedC.length && sortedU.every((v,i)=>v===sortedC[i]);
+      const fb=document.createElement('div'); fb.className='feedback show '+(isCorrect?'ok':'no');
+      fb.textContent=question.explain;
+      card.appendChild(fb);
+    }
+    wrap.appendChild(card);
+  });
+
+  const answeredCount = QUIZ_QUESTIONS.filter((_,i)=> (q.answers[i]||[]).length>0).length;
+  document.getElementById('quizDoneCount').textContent = 'Đã làm: '+answeredCount+'/'+QUIZ_QUESTIONS.length;
+  document.getElementById('quizBarFill').style.width = Math.round(answeredCount/QUIZ_QUESTIONS.length*100)+'%';
+
+  const submitBtn=document.getElementById('quizSubmitBtn');
+  const retryBtn=document.getElementById('quizRetryBtn');
+  const resultBox=document.getElementById('quizResultBox');
+  const statusEl=document.getElementById('quizStatus');
+
+  if(submitted){
+    submitBtn.style.display='none';
+    retryBtn.style.display='inline-flex';
+    resultBox.style.display='block';
+    document.getElementById('quizScoreCircle').textContent = q.score.toFixed(1);
+    let comment='';
+    if(q.score>=9) comment='Xuất sắc! Em nắm bài rất vững.';
+    else if(q.score>=7) comment='Tốt! Em đã hiểu khá rõ nội dung bài học.';
+    else if(q.score>=5) comment='Khá ổn, nhưng em nên xem lại một số nội dung.';
+    else comment='Em nên ôn lại kiến thức bài học trước khi làm lại.';
+    document.getElementById('quizComment').textContent=comment;
+    statusEl.textContent='Đã nộp bài';
+  } else {
+    submitBtn.style.display='inline-flex';
+    submitBtn.disabled = answeredCount < QUIZ_QUESTIONS.length;
+    retryBtn.style.display='none';
+    resultBox.style.display='none';
+    statusEl.textContent='';
+  }
+}
+
+document.getElementById('quizSubmitBtn').addEventListener('click',()=>{
+  const q = STATE.quiz;
+  let correctCount=0;
+  QUIZ_QUESTIONS.forEach((question,qi)=>{
+    const userAns=(q.answers[qi]||[]).slice().sort();
+    const correct=[...question.correct].sort();
+    const isCorrect = userAns.length===correct.length && userAns.every((v,i)=>v===correct[i]);
+    if(isCorrect) correctCount++;
+  });
+  q.score = Math.round((correctCount/QUIZ_QUESTIONS.length*10)*10)/10;
+  q.submitted=true;
+  beep(q.score>=5?'ok':'no');
+  saveState();
+  markComplete('quiz');
+  renderQuiz();
+});
+document.getElementById('quizRetryBtn').addEventListener('click',()=>{
+  STATE.quiz = {answers:{},submitted:false,score:0};
+  saveState();
+  renderQuiz();
+});
+
+/* ============================================================
+   9. VẬN DỤNG — nhiệm vụ tự luận
+   ============================================================ */
+function countWords(text){
+  return text.trim().length===0 ? 0 : text.trim().split(/\s+/).length;
+}
+function initEssay(num){
+  const ta=document.getElementById('essay'+num);
+  const wc=document.getElementById('wc'+num);
+  const saveBtn=document.getElementById('save'+num);
+  const hintBtn=document.getElementById('hint'+num+'Btn');
+  const hintBox=document.getElementById('hint'+num);
+  const key = 'essay'+num;
+  const savedKey='saved'+num;
+  const hintKey='hint'+num;
+
+  ta.value = STATE.apply[key] || '';
+  wc.textContent = countWords(ta.value);
+  hintBtn.disabled = !STATE.apply[savedKey];
+  if(STATE.apply[hintKey]) hintBox.classList.add('show');
+
+  ta.addEventListener('input',()=>{
+    STATE.apply[key]=ta.value;
+    wc.textContent=countWords(ta.value);
+    saveState();
+  });
+  saveBtn.addEventListener('click',()=>{
+    if(ta.value.trim().length===0) return;
+    STATE.apply[savedKey]=true;
+    saveState();
+    hintBtn.disabled=false;
+    beep('ok');
+    checkApplyComplete();
+  });
+  hintBtn.addEventListener('click',()=>{
+    STATE.apply[hintKey]=true;
+    saveState();
+    hintBox.classList.add('show');
+  });
+}
+function checkApplyComplete(){
+  if(STATE.apply.saved1 && STATE.apply.saved2) markComplete('apply');
+}
+
+/* ============================================================
+   10. TỔNG KẾT
+   ============================================================ */
+function renderSummary(){
+  const doneCount = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
+  const pct = Math.round(doneCount/TRACKED_SECTIONS.length*100);
+  document.getElementById('summaryTitle').textContent = STATE.studentName ? 'Kết quả học tập của '+STATE.studentName : 'Kết quả học tập';
+  document.getElementById('sumProgress').textContent = pct+'%';
+  document.getElementById('sumQuizScore').textContent = STATE.quiz.submitted ? STATE.quiz.score.toFixed(1) : '–';
+
+  const activities = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
+  document.getElementById('sumActivities').textContent = activities + '/' + TRACKED_SECTIONS.length;
+
+  const badgeWrap=document.getElementById('badgeWrap');
+  badgeWrap.innerHTML='';
+  if(doneCount===TRACKED_SECTIONS.length){
+    badgeWrap.innerHTML = '<div class="badge"><div class="ico">'+BADGE.icon+'</div><div class="name">'+BADGE.name+'</div></div>';
+  } else {
+    const p=document.createElement('p'); p.style.fontSize='.85rem'; p.style.color='var(--color-ink-soft)';
+    p.textContent='Hoàn thành tất cả các phần để nhận huy hiệu "'+BADGE.name+'"!';
+    badgeWrap.appendChild(p);
+  }
+
+  const reviewList=document.getElementById('reviewList');
+  reviewList.innerHTML='';
+  const sectionLabels = {warmup:'Khởi động',os:'Hệ điều hành',apps:'Phần mềm ứng dụng',compare:'Phân biệt hai loại phần mềm',ext:'Phần mở rộng của tệp',ai:'AI có trách nhiệm',quiz:'Luyện tập',apply:'Vận dụng'};
+  let needsReview=false;
+  TRACKED_SECTIONS.forEach(s=>{
+    if(!STATE.completed[s]){
+      needsReview=true;
+      const li=document.createElement('li'); li.textContent=sectionLabels[s];
+      reviewList.appendChild(li);
+    }
+  });
+  if(STATE.quiz.submitted && STATE.quiz.score<7){
+    needsReview=true;
+    const li=document.createElement('li'); li.textContent='Ôn lại bài kiểm tra Luyện tập (điểm hiện tại: '+STATE.quiz.score.toFixed(1)+'/10)';
+    reviewList.appendChild(li);
+  }
+  if(!needsReview){
+    const li=document.createElement('li'); li.textContent='Em đã hoàn thành tốt tất cả nội dung. Tuyệt vời!';
+    reviewList.appendChild(li);
+  }
+  updateSheetSubmitPreview();
+}
+
+document.getElementById('printBtn').addEventListener('click',()=> window.print());
+document.getElementById('relearnBtn').addEventListener('click',()=> showScreen('home'));
+document.getElementById('wipeBtn').addEventListener('click',()=>{
+  if(confirm('Em có chắc muốn xóa toàn bộ dữ liệu và bắt đầu lại từ đầu không?')){
+    localStorage.removeItem(STORAGE_KEY);
+    STATE = defaultState();
+    saveState();
+    location.reload();
+  }
+});
+
+/* ============================================================
+   ÂM THANH / TOÀN MÀN HÌNH / GIÁO VIÊN
+   ============================================================ */
+function updateSoundBtn(){
+  document.getElementById('soundBtn').textContent = STATE.soundOn ? '🔊' : '🔇';
+}
+document.getElementById('soundBtn').addEventListener('click',()=>{
+  STATE.soundOn = !STATE.soundOn;
+  saveState(); updateSoundBtn();
+});
+
+function toggleFullscreen(){
+  if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
+  else { document.exitFullscreen().catch(()=>{}); }
+}
+document.getElementById('fullscreenBtn').addEventListener('click',toggleFullscreen);
+document.getElementById('tbFullscreen').addEventListener('click',toggleFullscreen);
+
+const teacherBar=document.getElementById('teacherbar');
+document.getElementById('teacherbartoggle').addEventListener('click',()=>{
+  teacherBar.classList.toggle('open');
+});
+
+document.getElementById('toggleAnswersBtn').addEventListener('click',()=>{
+  STATE.answersVisible = !STATE.answersVisible;
+  document.body.classList.toggle('answers-visible', STATE.answersVisible);
+  document.getElementById('toggleAnswersBtn').textContent = STATE.answersVisible ? '🙈 Ẩn đáp án' : '👁️ Hiện đáp án';
+  saveState();
+  // Hiện nhanh đáp án đúng cho hoạt động đang mở (không tự động chấm điểm học sinh)
+  if(STATE.answersVisible){
+    alert('Chế độ giáo viên: đáp án đúng của mỗi hoạt động sẽ được đánh dấu bằng viền xanh khi học sinh trả lời. Ở màn hình Luyện tập, giáo viên có thể xem trước nội dung câu hỏi và đáp án đúng trong dữ liệu bài học.');
+  }
+});
+
+document.getElementById('tbResetCurrent').addEventListener('click',()=>{
+  const id = STATE.currentScreen;
+  if(!confirm('Đặt lại hoạt động của phần "'+id+'"?')) return;
+  const fresh = defaultState();
+  switch(id){
+    case 'warmup': STATE.warmup=fresh.warmup; break;
+    case 'os': STATE.osSort=fresh.osSort; STATE.race=fresh.race; STATE.completed.os=false; break;
+    case 'apps': STATE.appsMatch=fresh.appsMatch; STATE.completed.apps=false; break;
+    case 'compare': STATE.compareSort=fresh.compareSort; STATE.completed.compare=false; break;
+    case 'ext': STATE.extMatch=fresh.extMatch; STATE.completed.ext=false; break;
+    case 'ai': STATE.aiScenario=fresh.aiScenario; STATE.aiChecklist=fresh.aiChecklist; STATE.completed.ai=false; break;
+    case 'quiz': STATE.quiz=fresh.quiz; STATE.completed.quiz=false; break;
+    case 'apply': STATE.apply=fresh.apply; STATE.completed.apply=false; break;
+    default: break;
+  }
+  saveState();
+  renderAll();
+});
+
+document.getElementById('tbResetAll').addEventListener('click',()=>{
+  if(!confirm('Đặt lại TOÀN BỘ bài học? Mọi tiến độ sẽ bị xóa.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  STATE = defaultState();
+  saveState();
+  location.reload();
+});
+
+document.getElementById('tbPrint').addEventListener('click',()=>{
+  showScreen('summary');
+  setTimeout(()=>window.print(),300);
+});
+
+/* ============================================================
+   GOOGLE SHEET – GỬI KẾT QUẢ QUA APPS SCRIPT WEB APP
+   ============================================================ */
+const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxr-TGQbI3xSSdcjM5xiznYZB8ub_w5gE-oVvwkQpEiA6r-OS0G98VSBph1gMS1cBDURA/exec';
+
+function getCorrectAppsMatchCount(){
+  return Object.entries(STATE.appsMatch.matched)
+    .filter(([k,v])=>Number(k)===v).length;
+}
+
+function getCorrectCompareCount(){
+  let correct=0;
+  Object.entries(STATE.compareSort.placed).forEach(([item, groupId])=>{
+    const group=COMPARE_SORT_GROUPS.find(g=>g.id===groupId);
+    if(group && group.correctItems.includes(item)) correct++;
+  });
+  return correct;
+}
+
+function getCorrectExtensionCount(){
+  return Object.entries(STATE.extMatch.matched)
+    .filter(([k,v])=>Number(k)===v).length;
+}
+
+function getAiResultText(){
+  const choice=STATE.aiScenario.choice;
+  if(choice===null || choice===undefined) return 'Chưa làm';
+  const opt=AI_SCENARIO_OPTIONS[choice];
+  const checklistDone=STATE.aiChecklist.filter(Boolean).length;
+  return (opt && opt.correct ? 'Tình huống AI: đúng' : 'Tình huống AI: cần xem lại') +
+    `; Checklist: ${checklistDone}/${STATE.aiChecklist.length}`;
+}
+
+function getProgressText(){
+  const done=TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
+  return `${done}/${TRACKED_SECTIONS.length} (${Math.round(done/TRACKED_SECTIONS.length*100)}%)`;
+}
+
+function buildSheetPayload(){
+  return {
+    hoTen: (STATE.studentName || '').trim(),
+    lop: (STATE.studentClass || '').trim(),
+
+    // Cột "Quick Check" của Apps Script đang được dùng để lưu hai hoạt động nhận diện/phân biệt của tiết 2.
+    quickCheck:
+      `Chọn phần mềm: ${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length}; ` +
+      `Phân biệt HĐH/PMƯD: ${getCorrectCompareCount()}/${COMPARE_SORT_ITEMS.length}`,
+
+    fileExtension:
+      `${getCorrectExtensionCount()}/${EXT_PAIRS.length} (số lần ghép: ${STATE.extMatch.attempts || 0})`,
+
+    softwareDetective: getAiResultText(),
+
+    luyenTap: STATE.quiz.submitted ? `${STATE.quiz.score.toFixed(1)}/10` : 'Chưa nộp',
+
+    vanDung1: STATE.apply.essay1 || '',
+    vanDung2: STATE.apply.essay2 || '',
+    exitTicket: STATE.exitTicket || '',
+
+    tienDo: getProgressText(),
+
+    // Website hiện chỉ có một điểm số chuẩn hóa là bài luyện tập /10.
+    tongDiem: STATE.quiz.submitted ? STATE.quiz.score.toFixed(1) : ''
+  };
+}
+
+function updateSheetSubmitPreview(){
+  const studentInfo=document.getElementById('submitStudentInfo');
+  const resultInfo=document.getElementById('submitResultInfo');
+  const btn=document.getElementById('sendSheetBtn');
+  const fb=document.getElementById('sheetSubmitFeedback');
+  if(!studentInfo || !resultInfo || !btn || !fb) return;
+
+  studentInfo.textContent =
+    (STATE.studentName || STATE.studentClass)
+      ? `${STATE.studentName || 'Chưa có tên'} · ${STATE.studentClass || 'Chưa có lớp'}`
+      : 'Chưa nhập thông tin';
+
+  resultInfo.textContent =
+    `Tiến độ ${getProgressText()} · Luyện tập ${
+      STATE.quiz.submitted ? STATE.quiz.score.toFixed(1)+'/10' : 'chưa nộp'
+    }`;
+
+  if(STATE.sheetSubmission && STATE.sheetSubmission.sent){
+    fb.className='feedback show ok';
+    fb.textContent='✓ Kết quả đã được gửi lúc ' + (STATE.sheetSubmission.sentAt || '') + '.';
+    btn.textContent='✓ Đã gửi kết quả';
+    btn.disabled=true;
+  }else{
+    fb.className='feedback';
+    fb.textContent='';
+    btn.textContent='📤 Gửi kết quả';
+    btn.disabled=false;
+  }
+}
+
+async function sendResultToGoogleSheet(){
+  const fb=document.getElementById('sheetSubmitFeedback');
+  const btn=document.getElementById('sendSheetBtn');
+  if(!fb || !btn) return;
+
+  STATE.studentName = (document.getElementById('studentNameInput')?.value || STATE.studentName || '').trim();
+  STATE.studentClass = (document.getElementById('studentClassInput')?.value || STATE.studentClass || '').trim();
+  saveState();
+
+  if(!STATE.studentName || !STATE.studentClass){
+    fb.className='feedback show no';
+    fb.textContent='! Thiếu Họ tên hoặc Lớp. Hãy quay về Trang chủ và nhập đủ thông tin.';
+    return;
+  }
+
+  if(!STATE.exitTicket || !STATE.exitTicket.trim()){
+    fb.className='feedback show no';
+    fb.textContent='! Em cần hoàn thành Exit Ticket trước khi gửi kết quả.';
+    document.getElementById('exitTicket')?.focus();
+    return;
+  }
+
+  const unfinished=TRACKED_SECTIONS.filter(s=>!STATE.completed[s]);
+  if(unfinished.length){
+    fb.className='feedback show no';
+    fb.textContent='! Em còn ' + unfinished.length + ' phần chưa hoàn thành. Hãy hoàn thành bài trước khi gửi.';
+    return;
+  }
+
+  const payload=buildSheetPayload();
+
+  btn.disabled=true;
+  btn.textContent='⏳ Đang gửi...';
+  fb.className='feedback show';
+  fb.textContent='Đang gửi kết quả đến Google Sheet...';
+
+  try{
+    /*
+      mode:no-cors giúp website HTML mở trực tiếp bằng file:// vẫn gửi được
+      đến Google Apps Script. Vì phản hồi là "opaque", trình duyệt không đọc
+      nội dung JSON trả về, nhưng yêu cầu POST vẫn được gửi đến doPost(e).
+    */
+    await fetch(GOOGLE_SHEET_WEBAPP_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(payload)
+    });
+
+    STATE.sheetSubmission={
+      sent:true,
+      sentAt:new Date().toLocaleString('vi-VN')
+    };
+    saveState();
+
+    fb.className='feedback show ok';
+    fb.textContent='✓ Đã gửi yêu cầu lưu kết quả vào Google Sheet của giáo viên.';
+    btn.textContent='✓ Đã gửi kết quả';
+    btn.disabled=true;
+  }catch(error){
+    console.error('Lỗi gửi Google Sheet:', error);
+    fb.className='feedback show no';
+    fb.textContent='! Chưa gửi được kết quả. Kiểm tra kết nối Internet rồi thử lại.';
+    btn.textContent='📤 Thử gửi lại';
+    btn.disabled=false;
+  }
+}
+
+const sendSheetBtn=document.getElementById('sendSheetBtn');
+if(sendSheetBtn){
+  sendSheetBtn.addEventListener('click',sendResultToGoogleSheet);
+}
+
+/* ============================================================
+   EXIT TICKET – lưu tự động
+   ============================================================ */
+function initExitTicket(){
+  const el=document.getElementById('exitTicket');
+  const wc=document.getElementById('exitWc');
+  if(!el || !wc) return;
+  el.value=STATE.exitTicket || '';
+  const update=()=>{
+    const newValue=el.value;
+    if(newValue!==STATE.exitTicket && STATE.sheetSubmission && STATE.sheetSubmission.sent){
+      STATE.sheetSubmission={sent:false,sentAt:''};
+    }
+    STATE.exitTicket=newValue;
+    const count=el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
+    wc.textContent=count;
+    saveState();
+    updateSheetSubmitPreview();
+  };
+  el.addEventListener('input',update);
+  update();
+}
+
+/* ============================================================
+   KHỞI TẠO
+   ============================================================ */
+function renderAll(){
+  renderWarmup();
+  checkVideoSource();
+  renderOsSort();
+  renderRaceGame();
+  renderAppExamples();
+  renderAppsMatch();
+  renderCompareSort();
+  renderExtMatch();
+  renderAiScenario();
+  renderAiChecklist();
+  renderQuiz();
+  initEssay(1);
+  initEssay(2);
+  initExitTicket();
+  updateSheetSubmitPreview();
+  updateNavUI();
+  updateGameHUD();
+  updateSoundBtn();
+  showScreen(STATE.currentScreen || 'home');
+}
+renderAll();
+</script>
+</body>
+</html>
