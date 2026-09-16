@@ -892,7 +892,7 @@ input[aria-invalid="true"]{
   </div>
   <div class="card" id="sheetSubmitCard">
     <h3>📤 Gửi kết quả cho giáo viên</h3>
-    <p style="font-size:.88rem;">Kết quả 3 Mission sẽ được gửi đồng bộ vào Google Sheet của giáo viên. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và tích ít nhất một nội dung trong Exit Ticket trước khi gửi.</p>
+    <p style="font-size:.88rem;">Kết quả 3 Mission sẽ được gửi vào Google Sheet. Lưu ý: cần dùng Apps Script Web App URL kết thúc bằng /exec. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và tích ít nhất một nội dung trong Exit Ticket trước khi gửi.</p>
     <div class="grid2" style="margin-bottom:12px;">
       <div class="concept-card"><h4>👤 Học sinh</h4><p id="submitStudentInfo">Chưa nhập thông tin</p></div>
       <div class="concept-card"><h4>📊 Kết quả</h4><p id="submitResultInfo">Chưa hoàn thành</p></div>
@@ -1076,7 +1076,7 @@ const BADGE = {icon:'🏅', name:'Nhà khám phá phần mềm'};
 /* ============================================================
    TRẠNG THÁI & LƯU TRỮ
    ============================================================ */
-const STORAGE_KEY = 'datalab7_bai2_3mission_v1';
+const STORAGE_KEY = 'datalab7_bai2_3mission_v2_scoring';
 
 function defaultState(){
   return {
@@ -1090,9 +1090,9 @@ function defaultState(){
     warmup:{answered:[null,null,null,null]},
     osSort:{placed:{}},
     race:{teamA:'Đội A',teamB:'Đội B',scoreA:0,scoreB:0,qIndex:0,timeLeft:120,running:false,turn:null,selected:[],graded:false},
-    appsMatch:{leftSel:null,matched:{},rightOrder:[]},
+    appsMatch:{leftSel:null,matched:{},rightOrder:[],attemptsByPair:{}},
     compareSort:{placed:{}},
-    extMatch:{leftSel:null,matched:{},attempts:0,rightOrder:[]},
+    extMatch:{leftSel:null,matched:{},attempts:0,rightOrder:[],attemptsByPair:{}},
     aiScenario:{choice:null},
     aiChecklist:[false,false,false,false,false],
     quiz:{answers:{},submitted:false,score:0},
@@ -1265,7 +1265,7 @@ function currentMission(){
 }
 function getXP(){
   const m=missionState();
-  return (m[1]?30:0)+(m[2]?30:0)+(m[3]?40:0);
+  return (m[1]?getMission1XP():0)+(m[2]?30:0)+(m[3]?40:0);
 }
 function badgeState(){
   const m=missionState();
@@ -1338,7 +1338,8 @@ function launchConfetti(count=34){
 }
 function completionMessage(missionNo){
   const names={1:'File & Software Detective',2:'Software Rescue',3:'AI Guardian & Final Challenge'};
-  return {title:`✨ Mission ${missionNo} hoàn thành!`,detail:`+${XP_BY_MISSION[missionNo]} XP · ${names[missionNo]}`};
+  const earned = missionNo===1 ? getMission1XP() : XP_BY_MISSION[missionNo];
+  return {title:`✨ Mission ${missionNo} hoàn thành!`,detail:`+${earned} XP · ${names[missionNo]}`};
 }
 
 /* ============================================================
@@ -1832,6 +1833,40 @@ function ensureRightOrder(stateObj,length){
   }
 }
 
+
+function pairScoreByAttempts(attempts){
+  if(attempts<=0) return 0;
+  if(attempts===1) return 10;
+  if(attempts===2) return 7;
+  return 5;
+}
+
+function getMatchGameScore(stateObj, pairCount){
+  if(!stateObj || !stateObj.attemptsByPair) return 0;
+  let total=0;
+  for(let i=0;i<pairCount;i++){
+    if(stateObj.matched && stateObj.matched[i]===i){
+      total += pairScoreByAttempts(Number(stateObj.attemptsByPair[i] || 0));
+    }
+  }
+  return total;
+}
+
+function getMatchGameMaxScore(pairCount){
+  return pairCount*10;
+}
+
+function getMission1XP(){
+  const raw =
+    getMatchGameScore(STATE.extMatch, EXT_PAIRS.length) +
+    getMatchGameScore(STATE.appsMatch, APPS_MATCH_PAIRS.length);
+  const max =
+    getMatchGameMaxScore(EXT_PAIRS.length) +
+    getMatchGameMaxScore(APPS_MATCH_PAIRS.length);
+  if(max<=0) return 0;
+  return Math.round(30*raw/max);
+}
+
 function renderAppsMatch(){
   const c = document.getElementById('appsMatchGame');
   const s = STATE.appsMatch;
@@ -1862,12 +1897,31 @@ function renderAppsMatch(){
     b.disabled = alreadyUsed;
     b.addEventListener('click',()=>{
       if(s.leftSel===null || s.leftSel===undefined) return;
-      s.matched[s.leftSel]=origIndex;
-      const wasCorrect = s.leftSel===origIndex;
-      beep(wasCorrect?'ok':'no');
-      s.leftSel=null;
-      saveState(); renderAppsMatch();
-      if(Object.keys(s.matched).length===APPS_MATCH_PAIRS.length) markComplete('apps');
+      if(!s.attemptsByPair) s.attemptsByPair={};
+
+      const leftIndex=s.leftSel;
+      s.attemptsByPair[leftIndex]=(s.attemptsByPair[leftIndex]||0)+1;
+      const wasCorrect = leftIndex===origIndex;
+
+      if(wasCorrect){
+        s.matched[leftIndex]=origIndex;
+        s.leftSel=null;
+        beep('ok');
+        const earned=pairScoreByAttempts(s.attemptsByPair[leftIndex]);
+        showGameToast('✅ Ghép đúng',`+${earned} điểm cho cặp này`);
+      }else{
+        beep('no');
+        // Không ghi nhận cặp sai; giữ nguyên lựa chọn bên trái để học sinh thử lại.
+        showGameToast('↻ Chưa đúng','Cặp sai không được tính. Em hãy thử lại.');
+      }
+
+      saveState();
+      renderAppsMatch();
+
+      const allCorrect =
+        Object.keys(s.matched).length===APPS_MATCH_PAIRS.length &&
+        Object.entries(s.matched).every(([k,v])=>Number(k)===v);
+      if(allCorrect) markComplete('apps');
     });
     rightCol.appendChild(b);
   });
@@ -1877,12 +1931,23 @@ function renderAppsMatch(){
   const total=APPS_MATCH_PAIRS.length;
   const correctCount = Object.entries(s.matched).filter(([k,v])=>Number(k)===v).length;
   const info=document.createElement('p'); info.style.fontWeight='700'; info.style.marginTop='12px';
-  info.textContent = 'Đã ghép: '+Object.keys(s.matched).length+'/'+total+' — Đúng: '+correctCount+'/'+total;
+  const gameScore=getMatchGameScore(s,total);
+  const maxScore=getMatchGameMaxScore(total);
+  info.textContent =
+    'Đúng: '+correctCount+'/'+total+
+    ' — Điểm: '+gameScore+'/'+maxScore+
+    ' · Lần 1: 10đ · Lần 2: 7đ · Từ lần 3: 5đ';
   c.appendChild(info);
 
   const btnrow=document.createElement('div'); btnrow.className='btnrow';
   const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
-  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; s.rightOrder=makeShuffledOrder(APPS_MATCH_PAIRS.length); saveState(); renderAppsMatch(); });
+  resetBtn.addEventListener('click',()=>{
+    s.matched={}; s.leftSel=null; s.attemptsByPair={};
+    s.rightOrder=makeShuffledOrder(APPS_MATCH_PAIRS.length);
+    STATE.completed.apps=false;
+    STATE.sheetSubmission={sent:false,sentAt:''};
+    saveState(); renderAppsMatch(); updateNavUI();
+  });
   btnrow.appendChild(resetBtn);
   c.appendChild(btnrow);
 }
@@ -1930,12 +1995,32 @@ function renderExtMatch(){
     b.disabled = alreadyUsed;
     b.addEventListener('click',()=>{
       if(s.leftSel===null || s.leftSel===undefined) return;
-      s.matched[s.leftSel]=origIndex;
+      if(!s.attemptsByPair) s.attemptsByPair={};
+
+      const leftIndex=s.leftSel;
       s.attempts++;
-      beep(s.leftSel===origIndex?'ok':'no');
-      s.leftSel=null;
-      saveState(); renderExtMatch();
-      if(Object.keys(s.matched).length===EXT_PAIRS.length) markComplete('ext');
+      s.attemptsByPair[leftIndex]=(s.attemptsByPair[leftIndex]||0)+1;
+      const wasCorrect = leftIndex===origIndex;
+
+      if(wasCorrect){
+        s.matched[leftIndex]=origIndex;
+        s.leftSel=null;
+        beep('ok');
+        const earned=pairScoreByAttempts(s.attemptsByPair[leftIndex]);
+        showGameToast('✅ Ghép đúng',`+${earned} điểm cho cặp này`);
+      }else{
+        beep('no');
+        // Không khóa lựa chọn sai; học sinh phải tìm lại đáp án đúng.
+        showGameToast('↻ Chưa đúng','Không tính điểm cho đáp án này. Em hãy thử lại.');
+      }
+
+      saveState();
+      renderExtMatch();
+
+      const allCorrect =
+        Object.keys(s.matched).length===EXT_PAIRS.length &&
+        Object.entries(s.matched).every(([k,v])=>Number(k)===v);
+      if(allCorrect) markComplete('ext');
     });
     rightCol.appendChild(b);
   });
@@ -1944,11 +2029,22 @@ function renderExtMatch(){
 
   const total=EXT_PAIRS.length;
   const correctCount = Object.entries(s.matched).filter(([k,v])=>Number(k)===v).length;
-  document.getElementById('extScore').textContent = 'Đã ghép: '+Object.keys(s.matched).length+'/'+total+' — Cặp đúng: '+correctCount+'/'+total;
+  const gameScore=getMatchGameScore(s,total);
+  const maxScore=getMatchGameMaxScore(total);
+  document.getElementById('extScore').textContent =
+    'Cặp đúng: '+correctCount+'/'+total+
+    ' — Điểm: '+gameScore+'/'+maxScore+
+    ' · Lần 1: 10đ · Lần 2: 7đ · Từ lần 3: 5đ';
 
   const btnrow=document.createElement('div'); btnrow.className='btnrow';
   const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
-  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; s.attempts=0; s.rightOrder=makeShuffledOrder(EXT_PAIRS.length); saveState(); renderExtMatch(); });
+  resetBtn.addEventListener('click',()=>{
+    s.matched={}; s.leftSel=null; s.attempts=0; s.attemptsByPair={};
+    s.rightOrder=makeShuffledOrder(EXT_PAIRS.length);
+    STATE.completed.ext=false;
+    STATE.sheetSubmission={sent:false,sentAt:''};
+    saveState(); renderExtMatch(); updateNavUI();
+  });
   btnrow.appendChild(resetBtn);
   c.appendChild(btnrow);
 }
@@ -2282,6 +2378,27 @@ document.getElementById('tbPrint').addEventListener('click',()=>{
    ============================================================ */
 const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby-ru3BtmNm80KeWksBRz_iL4BPqpgIWtoa0zmhTsK5/dev';
 
+
+function validateGoogleSheetEndpoint(){
+  const url=(GOOGLE_SHEET_WEBAPP_URL||'').trim();
+  if(!url){
+    return {ok:false,message:'Chưa cấu hình URL Apps Script Web App.'};
+  }
+  if(url.endsWith('/dev')){
+    return {
+      ok:false,
+      message:'URL hiện tại đang là /dev (Test deployment). Hãy triển khai Web App chính thức và thay bằng URL kết thúc /exec.'
+    };
+  }
+  if(!url.endsWith('/exec')){
+    return {
+      ok:false,
+      message:'URL Apps Script chưa đúng dạng Web App. URL dùng cho học sinh nên kết thúc bằng /exec.'
+    };
+  }
+  return {ok:true,message:''};
+}
+
 function getCorrectAppsMatchCount(){
   return Object.entries(STATE.appsMatch.matched)
     .filter(([k,v])=>Number(k)===v).length;
@@ -2323,10 +2440,12 @@ function buildSheetPayload(){
 
     mission1File:
       `${getCorrectExtensionCount()}/${EXT_PAIRS.length} đúng` +
-      ` · ${STATE.extMatch.attempts || 0} lượt ghép`,
+      ` · Điểm ${getMatchGameScore(STATE.extMatch, EXT_PAIRS.length)}/${getMatchGameMaxScore(EXT_PAIRS.length)}` +
+      ` · ${STATE.extMatch.attempts || 0} lượt thử`,
 
     mission1Software:
-      `${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length} đúng`,
+      `${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length} đúng` +
+      ` · Điểm ${getMatchGameScore(STATE.appsMatch, APPS_MATCH_PAIRS.length)}/${getMatchGameMaxScore(APPS_MATCH_PAIRS.length)}`,
 
     mission2Sort:
       `${getCorrectCompareCount()}/${COMPARE_SORT_ITEMS.length} đúng`,
@@ -2415,6 +2534,15 @@ async function sendResultToGoogleSheet(){
     return;
   }
 
+  const endpointCheck=validateGoogleSheetEndpoint();
+  if(!endpointCheck.ok){
+    fb.className='feedback show no';
+    fb.textContent='! '+endpointCheck.message;
+    btn.textContent='📤 Gửi kết quả';
+    btn.disabled=false;
+    return;
+  }
+
   const payload=buildSheetPayload();
 
   btn.disabled=true;
@@ -2442,7 +2570,7 @@ async function sendResultToGoogleSheet(){
     saveState();
 
     fb.className='feedback show ok';
-    fb.textContent='✓ Đã gửi yêu cầu lưu kết quả vào Google Sheet của giáo viên.';
+    fb.textContent='✓ Đã gửi yêu cầu đến Web App. Giáo viên kiểm tra dòng dữ liệu mới trên Google Sheet.';
     btn.textContent='✓ Đã gửi kết quả';
     btn.disabled=true;
   }catch(error){
