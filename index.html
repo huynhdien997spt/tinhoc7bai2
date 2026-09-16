@@ -729,9 +729,8 @@ input[aria-invalid="true"]{
   </div>
 
   <div class="card teacher-stop">
-    <h3>🛑 TEACHER STOP · Dừng tại đây</h3>
-    <p><strong>Học sinh:</strong> kiểm tra lại hai trò chơi và chuẩn bị giải thích “Vì sao em chọn như vậy?”.</p>
-    <p><strong>Giáo viên:</strong> đi quan sát, sửa lỗi phổ biến và chốt nhanh: <em>phần mở rộng giúp nhận biết loại tệp; phần mềm được chọn theo công việc cần thực hiện.</em></p>
+    <h3>🛑 Dừng tại đây</h3>
+    <p>Kiểm tra lại kết quả và chuẩn bị giải thích: <em>“Vì sao em chọn như vậy?”</em></p>
     <div class="stop-status" id="mission1Status">Chưa hoàn thành đủ Mission 1.</div>
   </div>
 
@@ -783,9 +782,8 @@ input[aria-invalid="true"]{
   </div>
 
   <div class="card teacher-stop">
-    <h3>🛑 TEACHER STOP · Dừng để sửa bài</h3>
-    <p><strong>Học sinh:</strong> giữ nguyên màn hình câu trả lời để giáo viên xem.</p>
-    <p><strong>Giáo viên:</strong> chọn một số câu trả lời để sửa trực tiếp, hỏi lại “Nếu chọn sai phiên bản thì điều gì có thể xảy ra?” rồi mới cho mã Mission 3.</p>
+    <h3>🛑 Dừng tại đây</h3>
+    <p>Giữ nguyên màn hình câu trả lời và kiểm tra lại phần giải thích của em.</p>
     <div class="stop-status" id="mission2Status">Chưa hoàn thành đủ Mission 2.</div>
   </div>
 
@@ -847,8 +845,7 @@ input[aria-invalid="true"]{
   </div>
 
   <div class="card teacher-stop">
-    <h3>🛑 TEACHER STOP · Chốt trước Exit Ticket</h3>
-    <p><strong>Giáo viên:</strong> xem nhanh kết quả 5 câu, sửa 1–2 lỗi chung, nghe một vài câu vận dụng rồi mới cho học sinh sang Exit Ticket.</p>
+    <h3>🛑 Dừng tại đây</h3>
     <div class="stop-status" id="mission3Status">Chưa hoàn thành đủ Mission 3.</div>
   </div>
 
@@ -1386,15 +1383,15 @@ function updateMissionButtons(){
   const b3=document.getElementById('toExitBtn');
 
   if(s1){
-    s1.textContent=m[1]?'✅ Đã hoàn thành · Chờ giáo viên chốt và cho mật khẩu Mission 2.':'Chưa hoàn thành đủ 2 thử thách.';
+    s1.textContent=m[1]?'✅ Đã hoàn thành · Chờ mở khóa Mission 2.':'Chưa hoàn thành đủ 2 thử thách.';
     s1.classList.toggle('ready',m[1]);
   }
   if(s2){
-    s2.textContent=m[2]?'✅ Đã hoàn thành · Giữ câu trả lời để giáo viên sửa, sau đó nhận mật khẩu Mission 3.':'Cần hoàn thành phân loại và lưu câu giải thích.';
+    s2.textContent=m[2]?'✅ Đã hoàn thành · Kiểm tra lại câu trả lời, sau đó mở Mission 3.':'Cần hoàn thành phân loại và lưu câu giải thích.';
     s2.classList.toggle('ready',m[2]);
   }
   if(s3){
-    s3.textContent=m[3]?'✅ Đã hoàn thành · Chờ giáo viên chốt rồi sang Exit Ticket.':'Cần hoàn thành AI, 5 câu kiểm tra và lưu bài vận dụng.';
+    s3.textContent=m[3]?'✅ Đã hoàn thành · Hoàn thành xong rồi sang Exit Ticket.':'Cần hoàn thành AI, 5 câu kiểm tra và lưu bài vận dụng.';
     s3.classList.toggle('ready',m[3]);
   }
   if(b1) b1.disabled=!m[1];
