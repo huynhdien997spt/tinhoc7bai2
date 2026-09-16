@@ -625,7 +625,7 @@ input[aria-invalid="true"]{
         <input id="studentClassInput" type="text" placeholder="Lớp, ví dụ: 7A1">
       </div>
       <p id="nameGateNote" style="font-size:.82rem;margin:-6px auto 12px;max-width:420px;color:var(--color-primary-dark);font-weight:700;">
-        🔐 Nhập họ và tên để mở khóa DATA LAB.
+        🔐 Nhập họ tên và lớp để mở khóa DATA LAB. Kết quả sẽ được lưu dần sau mỗi Mission.
       </p>
       <button class="btn btn-primary" id="startBtn" style="font-size:1.05rem;padding:13px 30px;">VÀO DATA LAB 🚀</button>
     </div>
@@ -891,14 +891,14 @@ input[aria-invalid="true"]{
     <div id="exitCheckStatus" style="margin-top:10px;font-size:.84rem;font-weight:700;color:var(--color-primary-dark);">Chưa chọn nội dung nào.</div>
   </div>
   <div class="card" id="sheetSubmitCard">
-    <h3>📤 Gửi kết quả cho giáo viên</h3>
+    <h3>📤 Xác nhận kết quả cuối cho giáo viên</h3>
     <p style="font-size:.88rem;">Kết quả 3 Mission sẽ được gửi vào Google Sheet. Lưu ý: cần dùng Apps Script Web App URL kết thúc bằng /exec. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và tích ít nhất một nội dung trong Exit Ticket trước khi gửi.</p>
     <div class="grid2" style="margin-bottom:12px;">
       <div class="concept-card"><h4>👤 Học sinh</h4><p id="submitStudentInfo">Chưa nhập thông tin</p></div>
       <div class="concept-card"><h4>📊 Kết quả</h4><p id="submitResultInfo">Chưa hoàn thành</p></div>
     </div>
     <div class="btnrow">
-      <button class="btn btn-accent" id="sendSheetBtn">📤 Gửi kết quả</button>
+      <button class="btn btn-accent" id="sendSheetBtn">📤 Xác nhận kết quả cuối</button>
     </div>
     <div class="feedback" id="sheetSubmitFeedback"></div>
   </div>
@@ -1076,12 +1076,15 @@ const BADGE = {icon:'🏅', name:'Nhà khám phá phần mềm'};
 /* ============================================================
    TRẠNG THÁI & LƯU TRỮ
    ============================================================ */
-const STORAGE_KEY = 'datalab7_bai2_3mission_v2_scoring';
+const STORAGE_KEY = 'datalab7_bai2_3mission_v3_autosave';
 
 function defaultState(){
   return {
     studentName:'',
     studentClass:'',
+    sessionId:'',
+    sessionIdentity:'',
+    autoSave:{lastStage:'',lastAt:'',status:''},
     sheetSubmission:{sent:false,sentAt:''},
     exitTicketChecks:[false,false,false,false,false,false],
     unlockedSections:{home:true},
@@ -1125,6 +1128,24 @@ function saveState(){
   }catch(e){
     console.warn('Không thể lưu tiến độ vào bộ nhớ trình duyệt.', e);
   }
+}
+
+
+function createSessionId(){
+  try{
+    if(window.crypto && typeof window.crypto.randomUUID==='function'){
+      return 'DL7-'+window.crypto.randomUUID();
+    }
+  }catch(e){}
+  return 'DL7-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+}
+
+function ensureSessionId(){
+  if(!STATE.sessionId){
+    STATE.sessionId=createSessionId();
+    saveState();
+  }
+  return STATE.sessionId;
 }
 
 /* ============================================================
@@ -1484,6 +1505,9 @@ function markComplete(sectionId){
         const msg=completionMessage(n);
         showGameToast(msg.title,msg.detail);
         launchConfetti(n===3?36:16);
+
+        // Auto-save đúng tại mốc hoàn thành Mission.
+        autoSaveProgress(`Mission ${n}`, false);
       }
     });
   }
@@ -1504,18 +1528,43 @@ nameInput.addEventListener('input',()=>{
 });
 classInput.addEventListener('input',()=>{ STATE.studentClass = classInput.value; saveState(); });
 document.getElementById('startBtn').addEventListener('click',()=>{
-  STATE.studentName = nameInput.value.trim();
-  STATE.studentClass = classInput.value.trim();
-  saveState();
+  const newName=nameInput.value.trim();
+  const newClass=classInput.value.trim();
 
-  if(!STATE.studentName){
+  if(!newName){
     showGameToast('🔐 Chưa thể vào DATA LAB','Em hãy nhập họ và tên trước khi bắt đầu.');
     nameInput.focus();
     nameInput.setAttribute('aria-invalid','true');
     return;
   }
 
+  if(!newClass){
+    showGameToast('🔐 Chưa thể vào DATA LAB','Em hãy nhập lớp trước khi bắt đầu.');
+    classInput.focus();
+    classInput.setAttribute('aria-invalid','true');
+    return;
+  }
+
+  const identity=(newName+'|'+newClass).toLowerCase();
+
+  // Nếu đổi học sinh/lớp trên cùng máy, tạo một phiên mới để không ghi đè dòng cũ.
+  if(!STATE.sessionId || STATE.sessionIdentity!==identity){
+    STATE.sessionId=createSessionId();
+    STATE.sessionIdentity=identity;
+    STATE.autoSave={lastStage:'',lastAt:'',status:''};
+    STATE.sheetSubmission={sent:false,sentAt:''};
+  }
+
+  STATE.studentName=newName;
+  STATE.studentClass=newClass;
+  saveState();
+
   nameInput.removeAttribute('aria-invalid');
+  classInput.removeAttribute('aria-invalid');
+
+  // Gửi A-C ngay khi bắt đầu để giáo viên thấy học sinh đã vào bài.
+  autoSaveProgress('Bắt đầu', true);
+
   showGameToast('✅ Danh tính đã xác nhận',`Chào ${STATE.studentName}! DATA LAB đã được mở khóa.`);
   setTimeout(()=>showScreen('ext'),350);
 });
@@ -2433,8 +2482,11 @@ function getProgressText(){
   return `${done}/3 Mission (${Math.round(done/3*100)}%)`;
 }
 
-function buildSheetPayload(){
+function buildSheetPayload(stage=''){
+  ensureSessionId();
   return {
+    sessionId: STATE.sessionId,
+    stage: stage || '',
     hoTen: (STATE.studentName || '').trim(),
     lop: (STATE.studentClass || '').trim(),
 
@@ -2473,6 +2525,54 @@ function buildSheetPayload(){
   };
 }
 
+
+async function autoSaveProgress(stage, quiet=false){
+  const endpointCheck=validateGoogleSheetEndpoint();
+  if(!endpointCheck.ok) return false;
+
+  STATE.studentName=(document.getElementById('studentNameInput')?.value || STATE.studentName || '').trim();
+  STATE.studentClass=(document.getElementById('studentClassInput')?.value || STATE.studentClass || '').trim();
+
+  if(!STATE.studentName || !STATE.studentClass) return false;
+
+  ensureSessionId();
+  saveState();
+
+  try{
+    await fetch(GOOGLE_SHEET_WEBAPP_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(buildSheetPayload(stage))
+    });
+
+    STATE.autoSave={
+      lastStage:stage,
+      lastAt:new Date().toLocaleString('vi-VN'),
+      status:'sent'
+    };
+    saveState();
+    updateSheetSubmitPreview();
+
+    if(!quiet){
+      showGameToast('☁️ Đã gửi tiến độ',`${stage} đã được gửi về Google Sheet.`);
+    }
+    return true;
+  }catch(error){
+    console.error('Lỗi auto-save:',error);
+    STATE.autoSave={
+      lastStage:stage,
+      lastAt:new Date().toLocaleString('vi-VN'),
+      status:'error'
+    };
+    saveState();
+    if(!quiet){
+      showGameToast('⚠️ Chưa gửi được tiến độ','Kiểm tra Internet. Dữ liệu trên máy vẫn được giữ lại.');
+    }
+    return false;
+  }
+}
+
 function updateSheetSubmitPreview(){
   const studentInfo=document.getElementById('submitStudentInfo');
   const resultInfo=document.getElementById('submitResultInfo');
@@ -2485,20 +2585,25 @@ function updateSheetSubmitPreview(){
       ? `${STATE.studentName || 'Chưa có tên'} · ${STATE.studentClass || 'Chưa có lớp'}`
       : 'Chưa nhập thông tin';
 
+  const autoSaveText =
+    STATE.autoSave && STATE.autoSave.lastStage
+      ? ` · Auto-save: ${STATE.autoSave.lastStage}${STATE.autoSave.lastAt ? ' ('+STATE.autoSave.lastAt+')' : ''}`
+      : '';
+
   resultInfo.textContent =
     `Tiến độ ${getProgressText()} · XP ${getXP()}/100 · Quick Check ${
       STATE.quiz.submitted ? STATE.quiz.score.toFixed(1)+'/10' : 'chưa nộp'
-    }`;
+    }${autoSaveText}`;
 
   if(STATE.sheetSubmission && STATE.sheetSubmission.sent){
     fb.className='feedback show ok';
     fb.textContent='✓ Kết quả đã được gửi lúc ' + (STATE.sheetSubmission.sentAt || '') + '.';
-    btn.textContent='✓ Đã gửi kết quả';
+    btn.textContent='✓ Đã xác nhận kết quả cuối';
     btn.disabled=true;
   }else{
     fb.className='feedback';
     fb.textContent='';
-    btn.textContent='📤 Gửi kết quả';
+    btn.textContent='📤 Xác nhận kết quả cuối';
     btn.disabled=false;
   }
 }
@@ -2538,12 +2643,12 @@ async function sendResultToGoogleSheet(){
   if(!endpointCheck.ok){
     fb.className='feedback show no';
     fb.textContent='! '+endpointCheck.message;
-    btn.textContent='📤 Gửi kết quả';
+    btn.textContent='📤 Xác nhận kết quả cuối';
     btn.disabled=false;
     return;
   }
 
-  const payload=buildSheetPayload();
+  const payload=buildSheetPayload('Hoàn tất');
 
   btn.disabled=true;
   btn.textContent='⏳ Đang gửi...';
@@ -2570,8 +2675,8 @@ async function sendResultToGoogleSheet(){
     saveState();
 
     fb.className='feedback show ok';
-    fb.textContent='✓ Đã gửi yêu cầu đến Web App. Giáo viên kiểm tra dòng dữ liệu mới trên Google Sheet.';
-    btn.textContent='✓ Đã gửi kết quả';
+    fb.textContent='✓ Đã xác nhận kết quả cuối cuối. Google Sheet sẽ cập nhật trên chính dòng đã lưu từ các Mission trước.';
+    btn.textContent='✓ Đã xác nhận kết quả cuối';
     btn.disabled=true;
   }catch(error){
     console.error('Lỗi gửi Google Sheet:', error);
