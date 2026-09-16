@@ -480,6 +480,83 @@ input[aria-invalid="true"]{
   animation:softShake .28s ease;
 }
 
+
+/* ============================================================
+   MẬT KHẨU THEO PHẦN – ĐIỀU PHỐI LỚP HỌC
+   ============================================================ */
+#sectionGateOverlay{
+  position:fixed; inset:0; z-index:1200;
+  background:rgba(15,23,42,.58);
+  backdrop-filter:blur(4px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+#sectionGateOverlay.show{display:flex;}
+.gate-card{
+  width:min(430px,100%);
+  background:#fff;
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 24px 70px rgba(15,23,42,.28);
+  border:1px solid rgba(79,70,229,.16);
+}
+.gate-head{
+  display:flex;align-items:center;gap:12px;margin-bottom:12px;
+}
+.gate-lock{
+  width:48px;height:48px;border-radius:16px;
+  display:grid;place-items:center;font-size:1.55rem;
+  background:linear-gradient(135deg,#eef2ff,#e0f2fe);
+}
+.gate-card h3{margin:0;color:var(--color-primary-dark);font-size:1.08rem;}
+.gate-card p{font-size:.86rem;margin:.3rem 0 1rem;}
+.gate-input{
+  width:100%;padding:12px 14px;border-radius:12px;
+  border:1.5px solid var(--color-line);
+  font:inherit;font-size:1rem;
+  letter-spacing:.06em;
+}
+.gate-input:focus{
+  border-color:var(--color-primary);
+  box-shadow:0 0 0 4px rgba(79,70,229,.1);
+  outline:none;
+}
+.gate-error{
+  min-height:22px;margin-top:8px;
+  color:var(--color-error);
+  font-size:.82rem;font-weight:700;
+}
+.navbtn.gated::before{content:"🔒 ";font-size:.72rem;}
+.navbtn.unlocked::before{content:"🔓 ";font-size:.72rem;}
+
+
+.teacher-stop{
+  border:2px dashed #f59e0b !important;
+  background:linear-gradient(135deg,#fffbeb,#fff7ed);
+  box-shadow:none !important;
+}
+.teacher-stop h3{color:#92400e;}
+.teacher-stop p{margin-bottom:.55rem;}
+.stop-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid #fed7aa;
+  color:#9a3412;
+  font-size:.8rem;
+  font-weight:800;
+}
+.stop-status.ready{
+  border-color:#86efac;
+  background:#f0fdf4;
+  color:#166534;
+}
+
 </style>
 </head>
 <body>
@@ -500,6 +577,25 @@ input[aria-invalid="true"]{
 </div>
 
 <div id="gameToast" role="status" aria-live="polite"></div>
+
+<div id="sectionGateOverlay" aria-hidden="true">
+  <div class="gate-card" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="gate-head">
+      <div class="gate-lock">🔐</div>
+      <div>
+        <h3 id="gateTitle">Mở khóa phần học</h3>
+        <p id="gateSubtitle" style="margin:2px 0 0;">Nhập mật khẩu do giáo viên cung cấp.</p>
+      </div>
+    </div>
+    <input id="gatePasswordInput" class="gate-input" type="password" placeholder="Nhập mật khẩu..." autocomplete="off">
+    <div id="gateError" class="gate-error"></div>
+    <div class="btnrow" style="justify-content:flex-end;margin-top:8px;">
+      <button class="btn btn-ghost" id="gateCancelBtn">Để sau</button>
+      <button class="btn btn-primary" id="gateUnlockBtn">Mở khóa 🔓</button>
+    </div>
+  </div>
+</div>
+
 <div id="labMascot" aria-hidden="true">
   <div class="bot">🤖</div>
   <div class="bubble" id="mascotBubble">Chào mừng đến DATA LAB! Hoàn thành từng nhiệm vụ để mở khóa huy hiệu nhé.</div>
@@ -518,7 +614,7 @@ input[aria-invalid="true"]{
       <div class="teacher">Giáo viên: Huỳnh Văn Diễn</div>
       <h1>DATA LAB – GIẢI CỨU PHÒNG MÁY</h1>
       <p class="tagline"><strong>Bài 02: Phần mềm máy tính · Tiết 2 – 45 phút.</strong><br>
-      Em là thành viên mới của DATA LAB. Hãy vượt qua 4 nhiệm vụ để khôi phục hệ thống, mở khóa huy hiệu và trở thành <strong>DATA LAB HERO</strong>.</p>
+      Em là thành viên mới của DATA LAB. Hãy vượt qua 3 nhiệm vụ để khôi phục hệ thống, mở khóa huy hiệu và trở thành <strong>DATA LAB HERO</strong>.</p>
       <div class="hero-illustration" aria-hidden="true">
         <span>🧰</span><span>🖥️</span><span>🧩</span><span>🤖</span><span>🏆</span>
       </div>
@@ -533,12 +629,12 @@ input[aria-invalid="true"]{
       </p>
       <button class="btn btn-primary" id="startBtn" style="font-size:1.05rem;padding:13px 30px;">VÀO DATA LAB 🚀</button>
     </div>
-    <div class="mission-map" id="missionMapHome">
-      <div class="mission-node" data-mission="1"><span class="micon">🧰</span><strong>MISSION 1</strong><small>Software Hunter<br>0–14 phút</small></div>
-      <div class="mission-node" data-mission="2"><span class="micon">📁</span><strong>MISSION 2</strong><small>File Detective<br>14–22 phút</small></div>
-      <div class="mission-node" data-mission="3"><span class="micon">🤖</span><strong>MISSION 3</strong><small>AI Guardian<br>22–37 phút</small></div>
-      <div class="mission-node" data-mission="4"><span class="micon">🛠️</span><strong>MISSION 4</strong><small>Final Rescue<br>37–43 phút</small></div>
+    <div class="mission-map" id="missionMapHome" style="grid-template-columns:repeat(3,1fr);">
+      <div class="mission-node" data-mission="1"><span class="micon">📁</span><strong>MISSION 1</strong><small>File & Software Detective<br>0–13 phút</small></div>
+      <div class="mission-node" data-mission="2"><span class="micon">🧩</span><strong>MISSION 2</strong><small>Software Rescue<br>13–27 phút</small></div>
+      <div class="mission-node" data-mission="3"><span class="micon">🤖</span><strong>MISSION 3</strong><small>AI & Final Challenge<br>27–40 phút</small></div>
     </div>
+    <p style="margin:14px auto 0;font-size:.84rem;font-weight:700;color:var(--color-primary-dark);">40–45 phút: ✅ Exit Ticket + gửi kết quả</p>
     <div class="badge-strip" id="badgeStripHome">
       <span class="game-badge" data-badge="software">🧰 Software Spotter</span>
       <span class="game-badge" data-badge="file">📁 File Detective</span>
@@ -602,112 +698,130 @@ input[aria-invalid="true"]{
   <div class="btnrow"><button class="btn btn-primary" data-goto="apps">Tiếp theo: Phần mềm ứng dụng →</button></div>
 </section>
 
-<!-- ============ 4. PHẦN MỀM ỨNG DỤNG ============ -->
-<section class="screen" id="screen-apps" data-screen="apps">
-  <span class="sectiontag">MISSION 1A · 0–8 phút</span>
-  <h2>🧰 Software Hunter – Chọn đúng công cụ</h2>
-  <div class="mission-banner"><div class="icon">🧰</div><div><h3>Mục tiêu: khôi phục bộ công cụ của phòng máy</h3><p>Ghép đúng công việc với phần mềm phù hợp để nhận XP.</p></div></div>
-  <div class="card">
-    <p><strong>Gợi nhớ nhanh:</strong> Phần mềm ứng dụng giúp con người thực hiện một công việc cụ thể. Em không cần học lại định nghĩa; hãy quan sát ví dụ rồi chuyển ngay sang nhiệm vụ ghép công việc với phần mềm phù hợp.</p>
-    <div class="concept-cards" id="appExamples"></div>
+
+<!-- ============ MISSION 1 ============ -->
+<section class="screen" id="screen-ext" data-screen="ext">
+  <span class="sectiontag">MISSION 1 · 0–13 phút</span>
+  <h2>📁 File & Software Detective</h2>
+  <div class="mission-banner">
+    <div class="icon">🔎</div>
+    <div>
+      <h3>Giải mã tệp – chọn đúng công cụ</h3>
+      <p>Ghép phần mở rộng trước, sau đó chọn phần mềm phù hợp. Làm xong thì dừng để giáo viên sửa và chốt.</p>
+    </div>
   </div>
+
   <div class="card">
-    <h3>Trò chơi: Chọn đúng phần mềm</h3>
-    <p style="font-size:.85rem;">Chạm vào một công việc, sau đó chạm vào phần mềm phù hợp để ghép cặp.</p>
+    <h3>🎮 Thử thách 1 · Trò chơi ghép nối</h3>
+    <p style="font-size:.86rem;">Chạm vào một loại tệp, sau đó tìm phần mở rộng tương ứng ở cột bên phải. Thứ tự đáp án đã được xáo trộn.</p>
+    <div id="extMatchGame"></div>
+    <p id="extScore" style="font-weight:700;margin-top:10px;"></p>
+  </div>
+
+  <div class="card">
+    <h3>🎮 Thử thách 2 · Chọn đúng phần mềm</h3>
+    <p style="font-size:.86rem;">Ghép công việc với phần mềm phù hợp. Cột phần mềm được xáo trộn để tránh đoán theo hàng.</p>
+    <details style="margin-bottom:14px;">
+      <summary style="cursor:pointer;font-weight:700;color:var(--color-primary);">💡 Cần gợi ý? Xem một số phần mềm quen thuộc</summary>
+      <div class="concept-cards" id="appExamples" style="margin-top:12px;"></div>
+    </details>
     <div id="appsMatchGame"></div>
   </div>
-  <div class="card" style="border-left:5px solid var(--color-accent);box-shadow:none;">
-    <h3 style="font-size:1rem;">💬 Dừng 30 giây</h3>
-    <p style="margin:0;">Nếu máy tính chưa có hệ điều hành, Microsoft Word có thể hoạt động không? Hãy giải thích cho bạn bên cạnh bằng một câu.</p>
+
+  <div class="card teacher-stop">
+    <h3>🛑 TEACHER STOP · Dừng tại đây</h3>
+    <p><strong>Học sinh:</strong> kiểm tra lại hai trò chơi và chuẩn bị giải thích “Vì sao em chọn như vậy?”.</p>
+    <p><strong>Giáo viên:</strong> đi quan sát, sửa lỗi phổ biến và chốt nhanh: <em>phần mở rộng giúp nhận biết loại tệp; phần mềm được chọn theo công việc cần thực hiện.</em></p>
+    <div class="stop-status" id="mission1Status">Chưa hoàn thành đủ Mission 1.</div>
   </div>
-  <div class="btnrow"><button class="btn btn-primary" data-goto="compare">Mở khóa Mission 1B →</button></div>
+
+  <div class="btnrow">
+    <button class="btn btn-primary" id="toMission2Btn" data-goto="compare" disabled>🔐 Thầy cho phép → Mở Mission 2</button>
+  </div>
 </section>
 
-<!-- ============ 5. PHÂN BIỆT HAI LOẠI PHẦN MỀM ============ -->
+<!-- ============ MISSION 2 ============ -->
 <section class="screen" id="screen-compare" data-screen="compare">
-  <span class="sectiontag">MISSION 1B · 8–14 phút</span>
-  <h2>🧩 Sorting Battle – Phân loại phần mềm</h2>
-  <div class="mission-banner"><div class="icon">🧩</div><div><h3>Cổng hệ thống đang bị lẫn dữ liệu</h3><p>Phân loại đúng hệ điều hành và phần mềm ứng dụng để mở khóa Mission 2.</p></div></div>
+  <span class="sectiontag">MISSION 2 · 13–27 phút</span>
+  <h2>🧩 Software Rescue</h2>
+  <div class="mission-banner">
+    <div class="icon">🧩</div>
+    <div>
+      <h3>Phân biệt – giải thích – sửa sai</h3>
+      <p>Phân loại hệ điều hành và phần mềm ứng dụng, sau đó giải thích tính tương thích.</p>
+    </div>
+  </div>
+
   <div class="card">
-    <p style="font-size:.86rem;"><strong>Bảng gợi nhớ 1 phút:</strong> đọc nhanh rồi thực hiện hoạt động xếp nhóm bên dưới.</p>
+    <p style="font-size:.86rem;"><strong>Gợi nhớ 1 phút:</strong> Hệ điều hành quản lí, điều khiển máy tính và tạo môi trường cho ứng dụng hoạt động. Phần mềm ứng dụng thực hiện công việc cụ thể.</p>
     <div style="overflow-x:auto;">
       <table class="comparetable">
         <tr><th>Tiêu chí</th><th>Hệ điều hành</th><th>Phần mềm ứng dụng</th></tr>
         <tr><td>Vai trò</td><td>Quản lí và điều khiển máy tính</td><td>Thực hiện công việc cụ thể</td></tr>
-        <tr><td>Thời điểm cài đặt</td><td>Thường được cài trước</td><td>Được cài sau hệ điều hành</td></tr>
-        <tr><td>Mức độ cần thiết</td><td>Cần thiết để máy tính hoạt động và chạy ứng dụng</td><td>Cài đặt tùy nhu cầu</td></tr>
+        <tr><td>Cài đặt</td><td>Thường có trước</td><td>Cài theo nhu cầu</td></tr>
         <tr><td>Ví dụ</td><td>Windows, macOS, Linux, Android, iOS</td><td>Word, Scratch, Chrome, Zalo</td></tr>
       </table>
     </div>
   </div>
+
   <div class="card">
-    <h3>Hoạt động: Xếp nhóm phần mềm</h3>
-    <p style="font-size:.85rem;">Chạm vào một phần mềm, sau đó chạm vào nhóm phù hợp.</p>
+    <h3>🎮 Thử thách 1 · Sorting Battle</h3>
+    <p style="font-size:.86rem;">Xếp các phần mềm vào đúng nhóm.</p>
     <div id="compareSortGame"></div>
   </div>
-  <div class="btnrow"><button class="btn btn-primary" data-goto="ext">Mở khóa Mission 2 →</button></div>
+
+  <div class="card">
+    <h3>✍️ Thử thách 2 · Giải thích để giáo viên sửa</h3>
+    <p>Vì sao khi tải <strong>Scratch</strong>, em phải chọn phiên bản phù hợp với hệ điều hành của máy tính? Trả lời 2–3 câu.</p>
+    <textarea class="essay" id="essay2" placeholder="Nhập câu trả lời của em..."></textarea>
+    <div class="wordcount"><span id="wc2">0</span> từ</div>
+    <div class="btnrow">
+      <button class="btn btn-primary" id="save2">Lưu câu trả lời</button>
+      <button class="btn btn-ghost" id="hint2Btn" disabled>Xem gợi ý sau khi lưu</button>
+    </div>
+    <div class="hintbox" id="hint2">💡 Gợi ý: Nghĩ đến tính tương thích, khả năng cài đặt và hoạt động ổn định của phần mềm trên từng hệ điều hành.</div>
+  </div>
+
+  <div class="card teacher-stop">
+    <h3>🛑 TEACHER STOP · Dừng để sửa bài</h3>
+    <p><strong>Học sinh:</strong> giữ nguyên màn hình câu trả lời để giáo viên xem.</p>
+    <p><strong>Giáo viên:</strong> chọn một số câu trả lời để sửa trực tiếp, hỏi lại “Nếu chọn sai phiên bản thì điều gì có thể xảy ra?” rồi mới cho mã Mission 3.</p>
+    <div class="stop-status" id="mission2Status">Chưa hoàn thành đủ Mission 2.</div>
+  </div>
+
+  <div class="btnrow">
+    <button class="btn btn-primary" id="toMission3Btn" data-goto="ai" disabled>🔐 Thầy cho phép → Mở Mission 3</button>
+  </div>
 </section>
 
-<!-- ============ 6. PHẦN MỞ RỘNG CỦA TỆP ============ -->
-<section class="screen" id="screen-ext" data-screen="ext">
-  <span class="sectiontag">MISSION 2 · 14–22 phút</span>
-  <h2>📁 File Detective – Giải mã phần mở rộng</h2>
-  <div class="mission-banner"><div class="icon">🔎</div><div><h3>Các tệp trong DATA LAB đã mất nhãn</h3><p>Nhìn phần mở rộng và ghép đúng loại tệp để khôi phục kho dữ liệu.</p></div></div>
-  <div class="card">
-    <p><strong>Gợi nhớ:</strong> phần mở rộng nằm sau dấu chấm cuối cùng trong tên tệp và giúp nhận biết loại tệp. Hãy dùng kiến thức này để hoàn thành ghép nối.</p>
-  </div>
-  <div class="card">
-    <h3>Trò chơi ghép nối</h3>
-    <p style="font-size:.85rem;">Chạm vào một loại tệp bên trái, sau đó chạm vào phần mở rộng đúng bên phải.</p>
-    <div id="extMatchGame"></div>
-    <p id="extScore" style="font-weight:700;margin-top:10px;"></p>
-  </div>
-  <div class="card" style="border-left:5px solid var(--color-secondary);box-shadow:none;">
-    <h3 style="font-size:1rem;">🔎 Câu hỏi chốt</h3>
-    <p style="margin:0;">Khi nhìn thấy tệp <strong>game.sb3</strong>, em dựa vào chi tiết nào để nhận biết đây là dự án Scratch?</p>
-  </div>
-  <div class="btnrow"><button class="btn btn-primary" data-goto="ai">Mở khóa Mission 3 →</button></div>
-</section>
-
-<!-- ============ 7. AI CÓ TRÁCH NHIỆM ============ -->
+<!-- ============ MISSION 3 ============ -->
 <section class="screen" id="screen-ai" data-screen="ai">
-  <span class="sectiontag">MISSION 3A · 22–29 phút</span>
-  <h2>🤖 AI Guardian – Vượt bẫy AI</h2>
-  <div class="mission-banner"><div class="icon">🛡️</div><div><h3>AI đưa ra một câu trả lời rất nhanh… nhưng có chắc đúng?</h3><p>Ra quyết định có trách nhiệm: kiểm tra → đối chiếu → xác thực.</p></div></div>
+  <span class="sectiontag">MISSION 3 · 27–40 phút</span>
+  <h2>🤖 AI Guardian & Final Challenge</h2>
+  <div class="mission-banner">
+    <div class="icon">🛡️</div>
+    <div>
+      <h3>Kiểm tra AI – chốt kiến thức – vận dụng</h3>
+      <p>Xử lí tình huống AI, làm 5 câu kiểm tra nhanh và hoàn thành một nhiệm vụ vận dụng.</p>
+    </div>
+  </div>
+
   <div class="card">
-    <p><em>"Một học sinh dùng Google Translate để dịch đoạn văn tiếng Anh và dùng ChatGPT để tìm thông tin làm bài tập. Học sinh định sao chép toàn bộ kết quả mà không kiểm tra."</em></p>
+    <h3>🤖 Thử thách 1 · AI có luôn đúng?</h3>
+    <p><em>"Một học sinh dùng Google Translate và ChatGPT để làm bài rồi định sao chép toàn bộ kết quả mà không kiểm tra."</em></p>
     <p style="font-weight:700;">Theo em, học sinh đó nên làm gì?</p>
     <div class="optlist" id="aiScenarioOptions"></div>
     <div class="feedback" id="aiScenarioFeedback"></div>
+    <div style="margin-top:14px;">
+      <h4 style="font-size:.92rem;">Checklist sử dụng AI có trách nhiệm</h4>
+      <div class="checklist" id="aiChecklist"></div>
+    </div>
   </div>
-  <div class="card">
-    <h3>Ghi nhớ</h3>
-    <ul style="font-size:.9rem;color:var(--color-ink-soft);">
-      <li>Kết quả do AI tạo ra không phải lúc nào cũng chính xác.</li>
-      <li>AI có thể dịch sai, hiểu sai câu hỏi, tạo thông tin thiếu căn cứ hoặc nội dung không phù hợp.</li>
-      <li>Cần đọc lại, so sánh với sách giáo khoa hoặc nguồn đáng tin cậy.</li>
-      <li>Khi chưa chắc chắn, cần hỏi giáo viên hoặc người có chuyên môn.</li>
-      <li>Không nhập thông tin cá nhân hoặc dữ liệu nhạy cảm vào công cụ AI.</li>
-    </ul>
-  </div>
-  <div class="card">
-    <h3>Tự đánh giá: Em đã làm gì trước khi nộp bài?</h3>
-    <div class="checklist" id="aiChecklist"></div>
-  </div>
-  <div class="card" style="border-left:5px solid var(--color-accent);box-shadow:none;">
-    <h3 style="font-size:1rem;">💬 Trao đổi 1 phút</h3>
-    <p style="margin:0;">Nếu AI trả lời sai nhưng người dùng không kiểm tra lại, điều gì có thể xảy ra trong học tập hoặc đời sống?</p>
-  </div>
-  <div class="btnrow"><button class="btn btn-primary" data-goto="quiz">Tiếp tục Mission 3 →</button></div>
-</section>
 
-<!-- ============ 8. LUYỆN TẬP ============ -->
-<section class="screen" id="screen-quiz" data-screen="quiz">
-  <span class="sectiontag">MISSION 3B · 29–37 phút</span>
-  <h2>⚡ Knowledge Rush – 7 thử thách tốc độ</h2>
-  <div class="mission-banner"><div class="icon">⚡</div><div><h3>Chốt hệ thống trước vòng cuối</h3><p>Hoàn thành 7 câu để mở khóa khu vực Final Rescue.</p></div></div>
   <div class="card">
-    <div class="quizmeta"><span id="quizDoneCount">Đã làm: 0/7</span><span id="quizStatus"></span></div>
+    <h3>⚡ Thử thách 2 · Quick Check 5 câu</h3>
+    <p style="font-size:.85rem;">Đây là phần kiểm tra nhanh, không phải một Mission riêng.</p>
+    <div class="quizmeta"><span id="quizDoneCount">Đã làm: 0/5</span><span id="quizStatus"></span></div>
     <div class="quizbar"><div class="quizbarfill" id="quizBarFill"></div></div>
     <div id="quizQuestions"></div>
     <div id="quizResultBox" style="display:none;text-align:center;margin-top:10px;">
@@ -715,51 +829,42 @@ input[aria-invalid="true"]{
       <p id="quizComment" style="font-weight:700;"></p>
     </div>
     <div class="btnrow">
-      <button class="btn btn-accent" id="quizSubmitBtn">Nộp bài</button>
-      <button class="btn btn-ghost" id="quizRetryBtn" style="display:none;">Làm lại bài kiểm tra</button>
+      <button class="btn btn-accent" id="quizSubmitBtn">Nộp 5 câu</button>
+      <button class="btn btn-ghost" id="quizRetryBtn" style="display:none;">Làm lại</button>
     </div>
   </div>
-  <div class="btnrow"><button class="btn btn-primary" data-goto="apply">Mở khóa Final Rescue →</button></div>
-</section>
 
-<!-- ============ 9. VẬN DỤNG ============ -->
-<section class="screen" id="screen-apply" data-screen="apply">
-  <span class="sectiontag">MISSION 4 · 37–43 phút</span>
-  <h2>🛠️ Final Rescue – Giải cứu phòng máy</h2>
-  <div class="mission-banner"><div class="icon">🛠️</div><div><h3>Vòng cuối: dùng kiến thức để xử lí tình huống thật</h3><p>Hoàn thành hai nhiệm vụ vận dụng để trở thành DATA LAB HERO.</p></div></div>
   <div class="card">
-    <h3>Nhiệm vụ 1 · Trả lời ngắn</h3>
+    <h3>🛠️ Thử thách 3 · Vận dụng cuối</h3>
     <p>Nêu <strong>ít nhất 2 bộ phận</strong> của máy tính trong phòng thực hành thường dễ hư hỏng, nguyên nhân và một cách bảo quản.</p>
     <textarea class="essay" id="essay1" placeholder="Nhập câu trả lời của em..."></textarea>
     <div class="wordcount"><span id="wc1">0</span> từ</div>
     <div class="btnrow">
       <button class="btn btn-primary" id="save1">Lưu câu trả lời</button>
-      <button class="btn btn-ghost" id="hint1Btn" disabled>Xem gợi ý</button>
+      <button class="btn btn-ghost" id="hint1Btn" disabled>Xem gợi ý sau khi lưu</button>
     </div>
-    <div class="hintbox" id="hint1">💡 Gợi ý: Hãy nghĩ đến các bộ phận như chuột, bàn phím, màn hình, dây cắm... và những nguyên nhân như va đập, bụi bẩn, nguồn điện không ổn định, sử dụng sai cách. Đề xuất cách bảo quản phù hợp cho từng bộ phận.</div>
+    <div class="hintbox" id="hint1">💡 Gợi ý: Có thể nghĩ đến chuột, bàn phím, màn hình, dây cắm; nguyên nhân như va đập, bụi bẩn, nguồn điện không ổn định hoặc sử dụng sai cách.</div>
   </div>
-  <div class="card">
-    <h3>Nhiệm vụ 2 · Trọng tâm vận dụng</h3>
-    <p>Vì sao khi tải Scratch, em phải chọn phiên bản phù hợp với hệ điều hành của máy tính? Trả lời bằng 2–3 câu.</p>
-    <textarea class="essay" id="essay2" placeholder="Nhập câu trả lời của em..."></textarea>
-    <div class="wordcount"><span id="wc2">0</span> từ</div>
-    <div class="btnrow">
-      <button class="btn btn-primary" id="save2">Lưu câu trả lời</button>
-      <button class="btn btn-ghost" id="hint2Btn" disabled>Xem gợi ý</button>
-    </div>
-    <div class="hintbox" id="hint2">💡 Gợi ý: Hãy nghĩ đến tính tương thích giữa phần mềm và hệ điều hành, khả năng cài đặt và hoạt động ổn định. Một phiên bản không phù hợp có thể không cài đặt được hoặc không chạy đúng (nhưng không chắc chắn sẽ làm hỏng máy tính).</div>
+
+  <div class="card teacher-stop">
+    <h3>🛑 TEACHER STOP · Chốt trước Exit Ticket</h3>
+    <p><strong>Giáo viên:</strong> xem nhanh kết quả 5 câu, sửa 1–2 lỗi chung, nghe một vài câu vận dụng rồi mới cho học sinh sang Exit Ticket.</p>
+    <div class="stop-status" id="mission3Status">Chưa hoàn thành đủ Mission 3.</div>
   </div>
-  <div class="btnrow"><button class="btn btn-primary" data-goto="summary">Vào Victory Room 🏆</button></div>
+
+  <div class="btnrow">
+    <button class="btn btn-primary" id="toExitBtn" data-goto="summary" disabled>✅ Hoàn thành → Exit Ticket</button>
+  </div>
 </section>
 
 <!-- ============ 10. TỔNG KẾT ============ -->
 <section class="screen" id="screen-summary" data-screen="summary">
-  <span class="sectiontag">43–45 phút · VICTORY ROOM</span>
+  <span class="sectiontag">40–45 phút · EXIT TICKET & VICTORY ROOM</span>
   <h2 id="summaryTitle">🏆 Phòng chiến thắng</h2>
   <div class="card final-victory" id="victoryCard">
     <div class="trophy">🏆</div>
     <h3>DATA LAB COMPLETED</h3>
-    <p id="victoryText">Hoàn thành các nhiệm vụ để mở khóa toàn bộ huy hiệu.</p>
+    <p id="victoryText">Hoàn thành 3 Mission để mở khóa DATA LAB HERO.</p>
     <div class="badge-strip" id="badgeStripSummary">
       <span class="game-badge" data-badge="software">🧰 Software Spotter</span>
       <span class="game-badge" data-badge="file">📁 File Detective</span>
@@ -771,7 +876,7 @@ input[aria-invalid="true"]{
     <div class="summarygrid">
       <div class="statbox"><div class="num" id="sumProgress">0%</div><div class="lbl">Tiến độ hoàn thành</div></div>
       <div class="statbox"><div class="num" id="sumQuizScore">–</div><div class="lbl">Điểm luyện tập (/10)</div></div>
-      <div class="statbox"><div class="num" id="sumActivities">0</div><div class="lbl">Hoạt động đã hoàn thành</div></div>
+      <div class="statbox"><div class="num" id="sumActivities">0</div><div class="lbl">Mission đã hoàn thành</div></div>
     </div>
     <div class="badge-wrap" id="badgeWrap"></div>
     <div id="reviewSection">
@@ -780,14 +885,14 @@ input[aria-invalid="true"]{
     </div>
   </div>
   <div class="card">
-    <h3>🚪 Exit Ticket</h3>
-    <p style="font-size:.88rem;">Viết 2 câu ngắn: <strong>(1)</strong> điều em hiểu rõ hơn sau tiết học; <strong>(2)</strong> điều em cần nhớ khi chọn phần mềm hoặc sử dụng AI.</p>
-    <textarea class="essay" id="exitTicket" style="min-height:90px;" placeholder="Ví dụ: Em hiểu rằng... / Em cần nhớ rằng..."></textarea>
-    <div class="wordcount"><span id="exitWc">0</span> từ · được lưu tự động</div>
+    <h3>🚪 Exit Ticket – Em tự đánh giá</h3>
+    <p style="font-size:.88rem;">Hãy <strong>tích vào những điều đúng với em sau tiết học</strong>. Không cần chọn tất cả; hãy chọn đúng với mức độ em tự đánh giá.</p>
+    <div class="checklist" id="exitChecklist" tabindex="-1"></div>
+    <div id="exitCheckStatus" style="margin-top:10px;font-size:.84rem;font-weight:700;color:var(--color-primary-dark);">Chưa chọn nội dung nào.</div>
   </div>
   <div class="card" id="sheetSubmitCard">
     <h3>📤 Gửi kết quả cho giáo viên</h3>
-    <p style="font-size:.88rem;">Kết quả sẽ được gửi vào Google Sheet của giáo viên. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và hoàn thành Exit Ticket trước khi gửi.</p>
+    <p style="font-size:.88rem;">Kết quả 3 Mission sẽ được gửi đồng bộ vào Google Sheet của giáo viên. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và tích ít nhất một nội dung trong Exit Ticket trước khi gửi.</p>
     <div class="grid2" style="margin-bottom:12px;">
       <div class="concept-card"><h4>👤 Học sinh</h4><p id="submitStudentInfo">Chưa nhập thông tin</p></div>
       <div class="concept-card"><h4>📊 Kết quả</h4><p id="submitResultInfo">Chưa hoàn thành</p></div>
@@ -824,6 +929,7 @@ input[aria-invalid="true"]{
   <button id="tbResetCurrent">↺ Đặt lại hoạt động hiện tại</button>
   <button id="tbResetAll">🗑️ Đặt lại toàn bộ bài học</button>
   <button id="tbPrint">🖨️ In kết quả học tập</button>
+  <button id="tbGateInfo">🔑 Xem mã điều phối</button>
 </div>
 
 <script>
@@ -834,15 +940,14 @@ input[aria-invalid="true"]{
 
 const SECTIONS = [
   {id:'home', label:'Trang chủ'},
-  {id:'apps', label:'1. Ứng dụng'},
-  {id:'compare', label:'2A. Phân biệt'},
-  {id:'ext', label:'2B. Phần mở rộng'},
-  {id:'ai', label:'3A. AI'},
-  {id:'quiz', label:'3B. Luyện tập'},
-  {id:'apply', label:'4. Vận dụng'},
+  {id:'ext', label:'1. File & Software'},
+  {id:'compare', label:'2. Software Rescue'},
+  {id:'ai', label:'3. AI & Final'},
   {id:'summary', label:'Exit Ticket'}
 ];
-const TRACKED_SECTIONS = ['apps','compare','ext','ai','quiz','apply'];
+// Các cờ hoàn thành nội bộ vẫn giữ để chấm từng hoạt động,
+// nhưng học sinh chỉ nhìn thấy 3 Mission lớn.
+const TRACKED_SECTIONS = ['ext','apps','compare','ai','quiz','apply'];
 
 // Câu hỏi khởi động (đúng/sai có giải thích)
 const WARMUP_QUESTIONS = [
@@ -938,29 +1043,32 @@ const AI_CHECKLIST_ITEMS = [
   'Tôi không cung cấp thông tin cá nhân.'
 ];
 
+const EXIT_TICKET_ITEMS = [
+  'Em phân biệt được hệ điều hành và phần mềm ứng dụng.',
+  'Em nhận biết được loại tệp thông qua phần mở rộng.',
+  'Em chọn được phần mềm phù hợp với công việc cần thực hiện.',
+  'Em hiểu phần mềm ứng dụng cần tương thích với hệ điều hành.',
+  'Em biết cần kiểm tra kết quả do AI tạo ra trước khi sử dụng.',
+  'Em vẫn còn nội dung cần giáo viên hỗ trợ thêm.'
+];
+
 // Bài kiểm tra luyện tập
 const QUIZ_QUESTIONS = [
   {text:'1. Phần mềm nào là phần mềm ứng dụng?', type:'multi',
    options:['Linux','Gmail','Windows 8','UniKey'], correct:[1,3],
    explain:'Gmail và UniKey là phần mềm ứng dụng. Linux và Windows 8 là hệ điều hành.'},
-  {text:'2. Đâu là phần mềm hệ thống?', type:'single',
-   options:['Windows 98','Windows Media Player','Windows XP','Cả Windows 98 và Windows XP'], correct:[3],
-   explain:'Windows 98 và Windows XP đều là hệ điều hành (phần mềm hệ thống).'},
-  {text:'3. Windows Media Player có thể mở những loại tệp nào?', type:'multi',
+  {text:'2. Windows Media Player có thể mở những loại tệp nào?', type:'multi',
    options:['.mp3','.jpg','.avi','.txt'], correct:[0,2],
    explain:'Windows Media Player dùng để phát âm thanh (.mp3) và video (.avi).'},
-  {text:'4. Chức năng nào không phải của hệ điều hành?', type:'single',
+  {text:'3. Chức năng nào không phải của hệ điều hành?', type:'single',
    options:['Quản lí thiết bị phần cứng','Tổ chức thực hiện chương trình','Tạo và chỉnh sửa một tệp hình ảnh','Quản lí tệp và dữ liệu'], correct:[2],
-   explain:'Tạo và chỉnh sửa một tệp hình ảnh là công việc của phần mềm ứng dụng, không phải hệ điều hành.'},
-  {text:'5. Hệ điều hành thuộc loại phần mềm nào?', type:'single',
+   explain:'Tạo và chỉnh sửa hình ảnh là công việc của phần mềm ứng dụng.'},
+  {text:'4. Hệ điều hành thuộc loại phần mềm nào?', type:'single',
    options:['Phần mềm ứng dụng','Phần mềm hệ thống','Phần mềm giải trí','Phần mềm văn phòng'], correct:[1],
-   explain:'Hệ điều hành là phần mềm hệ thống, quản lí và điều khiển hoạt động của máy tính.'},
-  {text:'6. Máy tính cần tối thiểu bao nhiêu hệ điều hành để sử dụng theo cách thông thường?', type:'single',
-   options:['Không cần hệ điều hành nào','Một hệ điều hành','Hai hệ điều hành','Ba hệ điều hành'], correct:[1],
-   explain:'Máy tính cần tối thiểu một hệ điều hành để hoạt động và cho phép các phần mềm ứng dụng chạy.'},
-  {text:'7. Môi trường giúp người dùng trao đổi thông tin với máy tính được gọi là gì?', type:'single',
+   explain:'Hệ điều hành là phần mềm hệ thống.'},
+  {text:'5. Môi trường giúp người dùng trao đổi thông tin với máy tính được gọi là gì?', type:'single',
    options:['Bộ nhớ','Giao diện','Tệp tin','Ổ đĩa'], correct:[1],
-   explain:'Giao diện là môi trường giúp người dùng trao đổi thông tin, thao tác với máy tính.'}
+   explain:'Giao diện giúp người dùng trao đổi thông tin và thao tác với máy tính.'}
 ];
 
 const BADGE = {icon:'🏅', name:'Nhà khám phá phần mềm'};
@@ -968,21 +1076,23 @@ const BADGE = {icon:'🏅', name:'Nhà khám phá phần mềm'};
 /* ============================================================
    TRẠNG THÁI & LƯU TRỮ
    ============================================================ */
-const STORAGE_KEY = 'bai02_phanmem_tiet2_45p_v2';
+const STORAGE_KEY = 'datalab7_bai2_3mission_v1';
 
 function defaultState(){
   return {
     studentName:'',
     studentClass:'',
     sheetSubmission:{sent:false,sentAt:''},
+    exitTicketChecks:[false,false,false,false,false,false],
+    unlockedSections:{home:true},
     currentScreen:'home',
     completed:Object.fromEntries(TRACKED_SECTIONS.map(s=>[s,false])),
     warmup:{answered:[null,null,null,null]},
     osSort:{placed:{}},
     race:{teamA:'Đội A',teamB:'Đội B',scoreA:0,scoreB:0,qIndex:0,timeLeft:120,running:false,turn:null,selected:[],graded:false},
-    appsMatch:{leftSel:null,matched:{}},
+    appsMatch:{leftSel:null,matched:{},rightOrder:[]},
     compareSort:{placed:{}},
-    extMatch:{leftSel:null,matched:{},attempts:0},
+    extMatch:{leftSel:null,matched:{},attempts:0,rightOrder:[]},
     aiScenario:{choice:null},
     aiChecklist:[false,false,false,false,false],
     quiz:{answers:{},submitted:false,score:0},
@@ -1038,44 +1148,133 @@ function beep(type){
 }
 
 /* ============================================================
+   CỔNG MẬT KHẨU THEO PHẦN
+   Mật khẩu mặc định (giáo viên có thể đổi bằng cách thay hash):
+   apps=PM7, compare=PB7, ext=TEP7, ai=AI7, quiz=LT7, apply=VD7,
+   summary=TK7, master=GV2026.
+   ============================================================ */
+const SECTION_GATES = {
+  ext:     {label:'MISSION 1 · File & Software Detective', hash:'3be50b53fff3c07578038f7ca452ac182fabfd6fb281f4d3a9f0a14344644f9a'},
+  compare: {label:'MISSION 2 · Software Rescue', hash:'03b3ba63e2e690cca99cdeb7f614675be919bd9fa24001eb4697519bb14535fe'},
+  ai:      {label:'MISSION 3 · AI Guardian & Final Challenge', hash:'ee35409cb31bc20dbf7847556640f3cce9b7ccea73c71c0a7ab941be36c09348'}
+};
+const MASTER_GATE_HASH = '262851000b71310e070dde64f6d4725b7077555bd4e3974f7b8a67d909a6f112';
+
+async function sha256Hex(text){
+  const data=new TextEncoder().encode(text);
+  const hash=await crypto.subtle.digest('SHA-256',data);
+  return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function isSectionUnlocked(id){
+  if(id==='home') return true;
+  return !!(STATE.unlockedSections && STATE.unlockedSections[id]);
+}
+
+let pendingGateSection=null;
+
+function openSectionGate(id){
+  const gate=SECTION_GATES[id];
+  if(!gate) return false;
+  pendingGateSection=id;
+  const overlay=document.getElementById('sectionGateOverlay');
+  const title=document.getElementById('gateTitle');
+  const subtitle=document.getElementById('gateSubtitle');
+  const input=document.getElementById('gatePasswordInput');
+  const err=document.getElementById('gateError');
+  title.textContent='🔐 '+gate.label;
+  subtitle.textContent='Nhập mật khẩu do giáo viên cung cấp để tiếp tục.';
+  err.textContent='';
+  input.value='';
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+  setTimeout(()=>input.focus(),80);
+  return true;
+}
+
+function closeSectionGate(){
+  const overlay=document.getElementById('sectionGateOverlay');
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden','true');
+  pendingGateSection=null;
+}
+
+async function tryUnlockPendingSection(){
+  if(!pendingGateSection) return;
+  const input=document.getElementById('gatePasswordInput');
+  const err=document.getElementById('gateError');
+  const value=input.value.trim();
+  if(!value){
+    err.textContent='Em chưa nhập mật khẩu.';
+    input.focus();
+    return;
+  }
+  try{
+    const enteredHash=await sha256Hex(value);
+    const target=pendingGateSection;
+    const ok = enteredHash===SECTION_GATES[target].hash || enteredHash===MASTER_GATE_HASH;
+    if(!ok){
+      err.textContent='Mật khẩu chưa đúng. Hãy hỏi giáo viên rồi thử lại.';
+      input.select();
+      beep('no');
+      return;
+    }
+    if(!STATE.unlockedSections) STATE.unlockedSections={home:true};
+    STATE.unlockedSections[target]=true;
+    saveState();
+    beep('ok');
+    closeSectionGate();
+    showGameToast('🔓 Đã mở khóa',SECTION_GATES[target].label);
+    const goTarget=target;
+    setTimeout(()=>showScreen(goTarget),180);
+  }catch(e){
+    // Fallback cho một số trình duyệt/file:// không hỗ trợ SubtleCrypto ổn định:
+    // Nếu gặp lỗi, báo rõ để giáo viên đổi sang trình duyệt Chrome/Edge hiện đại.
+    console.error(e);
+    err.textContent='Trình duyệt chưa hỗ trợ kiểm tra mật khẩu. Hãy mở bằng Chrome/Edge phiên bản mới.';
+  }
+}
+
+document.getElementById('gateUnlockBtn')?.addEventListener('click',tryUnlockPendingSection);
+document.getElementById('gateCancelBtn')?.addEventListener('click',closeSectionGate);
+document.getElementById('gatePasswordInput')?.addEventListener('keydown',(e)=>{
+  if(e.key==='Enter') tryUnlockPendingSection();
+  if(e.key==='Escape') closeSectionGate();
+});
+document.getElementById('sectionGateOverlay')?.addEventListener('click',(e)=>{
+  if(e.target.id==='sectionGateOverlay') closeSectionGate();
+});
+
+/* ============================================================
    GAME MODE – XP, HUY HIỆU, MISSION MAP, MASCOT
    ============================================================ */
-const XP_BY_SECTION = {apps:15, compare:15, ext:20, ai:15, quiz:15, apply:20};
-const SECTION_GAME_NAME = {
-  apps:'Software Hunter',
-  compare:'Sorting Battle',
-  ext:'File Detective',
-  ai:'AI Guardian',
-  quiz:'Knowledge Rush',
-  apply:'Final Rescue'
-};
+const XP_BY_MISSION = {1:30,2:30,3:40};
 
-function getXP(){
-  return TRACKED_SECTIONS.reduce((sum,id)=>sum+(STATE.completed[id]?(XP_BY_SECTION[id]||0):0),0);
-}
-function badgeState(){
-  return {
-    software: !!(STATE.completed.apps && STATE.completed.compare),
-    file: !!STATE.completed.ext,
-    ai: !!(STATE.completed.ai && STATE.completed.quiz),
-    hero: !!TRACKED_SECTIONS.every(id=>STATE.completed[id])
-  };
-}
 function missionState(){
   return {
-    1: !!(STATE.completed.apps && STATE.completed.compare),
-    2: !!STATE.completed.ext,
-    3: !!(STATE.completed.ai && STATE.completed.quiz),
-    4: !!STATE.completed.apply
+    1: !!(STATE.completed.ext && STATE.completed.apps),
+    2: !!(STATE.completed.compare && STATE.apply.saved2),
+    3: !!(STATE.completed.ai && STATE.completed.quiz && STATE.apply.saved1)
   };
 }
 function currentMission(){
   const m=missionState();
   if(!m[1]) return 1;
   if(!m[2]) return 2;
-  if(!m[3]) return 3;
-  if(!m[4]) return 4;
-  return 4;
+  return 3;
+}
+function getXP(){
+  const m=missionState();
+  return (m[1]?30:0)+(m[2]?30:0)+(m[3]?40:0);
+}
+function badgeState(){
+  const m=missionState();
+  return {
+    file: !!m[1],
+    software: !!m[2],
+    ai: !!m[3],
+    hero: !!(m[1] && m[2] && m[3])
+  };
 }
 function updateGameHUD(){
   const xp=getXP();
@@ -1099,12 +1298,9 @@ function updateGameHUD(){
   if(bubble){
     const messages={
       home:'Chào mừng đến DATA LAB! Nhập tên và lớp rồi bắt đầu nhiệm vụ nhé.',
-      apps:'Mission 1 bắt đầu! Hãy chọn đúng phần mềm cho từng công việc.',
-      compare:'Sắp xếp thật chính xác để mở khóa kho dữ liệu.',
-      ext:'Thám tử tệp tin: chú ý phần sau dấu chấm nhé!',
-      ai:'Đừng tin AI ngay lập tức. Kiểm tra – đối chiếu – xác thực!',
-      quiz:'Knowledge Rush! Bình tĩnh đọc kỹ từng câu.',
-      apply:'Vòng cuối rồi! Hãy giải thích bằng hiểu biết của chính em.',
+      ext:'Mission 1: ghép tệp và chọn phần mềm. Làm xong hãy dừng để Thầy sửa.',
+      compare:'Mission 2: phân loại và giải thích tính tương thích. Làm xong chờ Thầy chốt.',
+      ai:'Mission 3: kiểm tra AI, 5 câu nhanh và vận dụng cuối.',
       summary: badges.hero?'Xuất sắc! Em đã trở thành DATA LAB HERO!':'Victory Room đây rồi. Hoàn thành nốt phần còn thiếu nhé.'
     };
     bubble.textContent=messages[STATE.currentScreen]||'Tiếp tục khám phá DATA LAB nhé!';
@@ -1113,7 +1309,7 @@ function updateGameHUD(){
   const victoryText=document.getElementById('victoryText');
   if(victoryText){
     victoryText.textContent=badges.hero
-      ? `Tuyệt vời, ${STATE.studentName||'em'}! Em đã hoàn thành 4 mission và đạt ${xp}/100 XP.`
+      ? `Tuyệt vời, ${STATE.studentName||'em'}! Em đã hoàn thành 3 Mission và đạt ${xp}/100 XP.`
       : `Em đang có ${xp}/100 XP. Hãy hoàn thành những nhiệm vụ còn thiếu để mở khóa DATA LAB HERO.`;
   }
 }
@@ -1140,9 +1336,9 @@ function launchConfetti(count=34){
     setTimeout(()=>p.remove(),2200);
   }
 }
-function completionMessage(sectionId){
-  const xp=XP_BY_SECTION[sectionId]||0;
-  return {title:`✨ ${SECTION_GAME_NAME[sectionId]||'Nhiệm vụ'} hoàn thành!`,detail:`+${xp} XP · Tiếp tục mở khóa DATA LAB`};
+function completionMessage(missionNo){
+  const names={1:'File & Software Detective',2:'Software Rescue',3:'AI Guardian & Final Challenge'};
+  return {title:`✨ Mission ${missionNo} hoàn thành!`,detail:`+${XP_BY_MISSION[missionNo]} XP · ${names[missionNo]}`};
 }
 
 /* ============================================================
@@ -1157,18 +1353,58 @@ SECTIONS.forEach(s=>{
   navlist.appendChild(b);
 });
 
+
+function updateMissionButtons(){
+  const m=missionState();
+  const s1=document.getElementById('mission1Status');
+  const s2=document.getElementById('mission2Status');
+  const s3=document.getElementById('mission3Status');
+  const b1=document.getElementById('toMission2Btn');
+  const b2=document.getElementById('toMission3Btn');
+  const b3=document.getElementById('toExitBtn');
+
+  if(s1){
+    s1.textContent=m[1]?'✅ Đã hoàn thành · Chờ giáo viên chốt và cho mật khẩu Mission 2.':'Chưa hoàn thành đủ 2 thử thách.';
+    s1.classList.toggle('ready',m[1]);
+  }
+  if(s2){
+    s2.textContent=m[2]?'✅ Đã hoàn thành · Giữ câu trả lời để giáo viên sửa, sau đó nhận mật khẩu Mission 3.':'Cần hoàn thành phân loại và lưu câu giải thích.';
+    s2.classList.toggle('ready',m[2]);
+  }
+  if(s3){
+    s3.textContent=m[3]?'✅ Đã hoàn thành · Chờ giáo viên chốt rồi sang Exit Ticket.':'Cần hoàn thành AI, 5 câu kiểm tra và lưu bài vận dụng.';
+    s3.classList.toggle('ready',m[3]);
+  }
+  if(b1) b1.disabled=!m[1];
+  if(b2) b2.disabled=!m[2];
+  if(b3) b3.disabled=!m[3];
+}
+
 function updateNavUI(){
+  const ms=missionState();
   document.querySelectorAll('.navbtn').forEach(b=>{
     const id=b.dataset.section;
     b.classList.toggle('active', id===STATE.currentScreen);
-    b.classList.toggle('done', !!STATE.completed[id]);
+
+    const done =
+      id==='ext' ? ms[1] :
+      id==='compare' ? ms[2] :
+      id==='ai' ? ms[3] :
+      id==='summary' ? (ms[1]&&ms[2]&&ms[3]) : false;
+    b.classList.toggle('done', done);
+
     const hasName=(document.getElementById('studentNameInput')?.value || STATE.studentName || '').trim().length>0;
     b.classList.toggle('locked', id!=='home' && !hasName);
+    const hasGate=!!SECTION_GATES[id];
+    const gateUnlocked=isSectionUnlocked(id);
+    b.classList.toggle('gated', hasGate && !gateUnlocked);
+    b.classList.toggle('unlocked', hasGate && gateUnlocked);
     b.setAttribute('aria-disabled', (id!=='home' && !hasName) ? 'true' : 'false');
   });
-  const doneCount = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
-  const pct = Math.round(doneCount/TRACKED_SECTIONS.length*100);
-  document.getElementById('progressfill').style.width = pct+'%';
+
+  const missionDone=[1,2,3].filter(n=>ms[n]).length;
+  document.getElementById('progressfill').style.width = Math.round(missionDone/3*100)+'%';
+  updateMissionButtons();
   updateGameHUD();
 }
 
@@ -1194,6 +1430,21 @@ function showScreen(id){
     STATE.studentName=typedName;
   }
 
+  // CỔNG MẬT KHẨU THEO PHẦN
+  if(id!=='home' && SECTION_GATES[id] && !isSectionUnlocked(id)){
+    openSectionGate(id);
+    return;
+  }
+
+  // Exit Ticket chỉ mở sau khi hoàn thành cả 3 Mission.
+  if(id==='summary'){
+    const m=missionState();
+    if(!(m[1] && m[2] && m[3])){
+      showGameToast('⏳ Chưa đến Exit Ticket','Hãy hoàn thành 3 Mission và chờ giáo viên chốt trước.');
+      return;
+    }
+  }
+
   document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
   const el = document.getElementById('screen-'+id);
   if(el) el.classList.add('active');
@@ -1203,7 +1454,7 @@ function showScreen(id){
   saveState();
   if(id==='summary'){
     renderSummary();
-    if(TRACKED_SECTIONS.every(s=>STATE.completed[s]) && !window.__dataLabVictoryShown){
+    if(Object.values(missionState()).every(Boolean) && !window.__dataLabVictoryShown){
       window.__dataLabVictoryShown=true;
       setTimeout(()=>{ launchConfetti(52); showGameToast('🏆 DATA LAB COMPLETED!','Em đã mở khóa toàn bộ nhiệm vụ.'); },350);
     }
@@ -1221,18 +1472,19 @@ document.getElementById('navtoggle').addEventListener('click',()=>{
 
 function markComplete(sectionId){
   if(TRACKED_SECTIONS.includes(sectionId) && !STATE.completed[sectionId]){
-    const before=badgeState();
+    const before=missionState();
     STATE.completed[sectionId]=true;
     saveState();
+    const after=missionState();
     updateNavUI();
-    const msg=completionMessage(sectionId);
-    showGameToast(msg.title,msg.detail);
-    launchConfetti(16);
-    const after=badgeState();
-    if(!before.software && after.software) setTimeout(()=>showGameToast('🏅 Huy hiệu mới: Software Spotter','Em đã phân biệt và lựa chọn phần mềm tốt.'),800);
-    if(!before.file && after.file) setTimeout(()=>showGameToast('🏅 Huy hiệu mới: File Detective','Em đã giải mã được phần mở rộng tệp.'),800);
-    if(!before.ai && after.ai) setTimeout(()=>showGameToast('🏅 Huy hiệu mới: AI Guardian','Em biết dùng AI có trách nhiệm.'),800);
-    if(!before.hero && after.hero) setTimeout(()=>{showGameToast('🏆 Huy hiệu mới: DATA LAB HERO','100 XP · Hoàn thành toàn bộ nhiệm vụ!');launchConfetti(60);},900);
+
+    [1,2,3].forEach(n=>{
+      if(!before[n] && after[n]){
+        const msg=completionMessage(n);
+        showGameToast(msg.title,msg.detail);
+        launchConfetti(n===3?36:16);
+      }
+    });
   }
 }
 
@@ -1264,7 +1516,7 @@ document.getElementById('startBtn').addEventListener('click',()=>{
 
   nameInput.removeAttribute('aria-invalid');
   showGameToast('✅ Danh tính đã xác nhận',`Chào ${STATE.studentName}! DATA LAB đã được mở khóa.`);
-  setTimeout(()=>showScreen('apps'),350);
+  setTimeout(()=>showScreen('ext'),350);
 });
 
 /* ============================================================
@@ -1556,6 +1808,30 @@ function renderAppExamples(){
   });
 }
 
+
+function makeShuffledOrder(length){
+  const arr=Array.from({length},(_,i)=>i);
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  // Không để vô tình trùng hoàn toàn thứ tự gốc vì sẽ làm trò chơi quá dễ.
+  const isIdentity=arr.every((v,i)=>v===i);
+  if(isIdentity && arr.length>1){
+    arr.push(arr.shift());
+  }
+  return arr;
+}
+
+function ensureRightOrder(stateObj,length){
+  if(!Array.isArray(stateObj.rightOrder) ||
+     stateObj.rightOrder.length!==length ||
+     new Set(stateObj.rightOrder).size!==length){
+    stateObj.rightOrder=makeShuffledOrder(length);
+    saveState();
+  }
+}
+
 function renderAppsMatch(){
   const c = document.getElementById('appsMatchGame');
   const s = STATE.appsMatch;
@@ -1576,17 +1852,18 @@ function renderAppsMatch(){
   wrap.appendChild(leftCol);
 
   const rightCol=document.createElement('div'); rightCol.className='matchcol';
-  rightCol.innerHTML='<h4>Phần mềm</h4>';
-  const shuffledRight = APPS_MATCH_PAIRS.map((p,i)=>({label:p.software,origIndex:i}));
-  shuffledRight.forEach(item=>{
-    const alreadyUsed = Object.values(s.matched).includes(item.origIndex);
-    const b=document.createElement('button'); b.className='matchitem'; b.textContent=item.label;
+  rightCol.innerHTML='<h4>Phần mềm <span style="font-size:.72rem;font-weight:600;color:var(--color-ink-soft);">(đã xáo trộn)</span></h4>';
+  ensureRightOrder(s, APPS_MATCH_PAIRS.length);
+  s.rightOrder.forEach(origIndex=>{
+    const p=APPS_MATCH_PAIRS[origIndex];
+    const alreadyUsed = Object.values(s.matched).includes(origIndex);
+    const b=document.createElement('button'); b.className='matchitem'; b.textContent=p.software;
     if(alreadyUsed) b.classList.add('matched');
     b.disabled = alreadyUsed;
     b.addEventListener('click',()=>{
       if(s.leftSel===null || s.leftSel===undefined) return;
-      s.matched[s.leftSel]=item.origIndex;
-      const wasCorrect = s.leftSel===item.origIndex;
+      s.matched[s.leftSel]=origIndex;
+      const wasCorrect = s.leftSel===origIndex;
       beep(wasCorrect?'ok':'no');
       s.leftSel=null;
       saveState(); renderAppsMatch();
@@ -1605,7 +1882,7 @@ function renderAppsMatch(){
 
   const btnrow=document.createElement('div'); btnrow.className='btnrow';
   const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
-  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; saveState(); renderAppsMatch(); });
+  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; s.rightOrder=makeShuffledOrder(APPS_MATCH_PAIRS.length); saveState(); renderAppsMatch(); });
   btnrow.appendChild(resetBtn);
   c.appendChild(btnrow);
 }
@@ -1643,17 +1920,19 @@ function renderExtMatch(){
   wrap.appendChild(leftCol);
 
   const rightCol=document.createElement('div'); rightCol.className='matchcol';
-  rightCol.innerHTML='<h4>Phần mở rộng</h4>';
-  EXT_PAIRS.forEach((p,i)=>{
-    const alreadyUsed = Object.values(s.matched).includes(i);
+  rightCol.innerHTML='<h4>Phần mở rộng <span style="font-size:.72rem;font-weight:600;color:var(--color-ink-soft);">(đã xáo trộn)</span></h4>';
+  ensureRightOrder(s, EXT_PAIRS.length);
+  s.rightOrder.forEach(origIndex=>{
+    const p=EXT_PAIRS[origIndex];
+    const alreadyUsed = Object.values(s.matched).includes(origIndex);
     const b=document.createElement('button'); b.className='matchitem'; b.textContent=p.right;
     if(alreadyUsed) b.classList.add('matched');
     b.disabled = alreadyUsed;
     b.addEventListener('click',()=>{
       if(s.leftSel===null || s.leftSel===undefined) return;
-      s.matched[s.leftSel]=i;
+      s.matched[s.leftSel]=origIndex;
       s.attempts++;
-      beep(s.leftSel===i?'ok':'no');
+      beep(s.leftSel===origIndex?'ok':'no');
       s.leftSel=null;
       saveState(); renderExtMatch();
       if(Object.keys(s.matched).length===EXT_PAIRS.length) markComplete('ext');
@@ -1669,7 +1948,7 @@ function renderExtMatch(){
 
   const btnrow=document.createElement('div'); btnrow.className='btnrow';
   const resetBtn=document.createElement('button'); resetBtn.className='btn btn-ghost'; resetBtn.textContent='Làm lại';
-  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; s.attempts=0; saveState(); renderExtMatch(); });
+  resetBtn.addEventListener('click',()=>{ s.matched={}; s.leftSel=null; s.attempts=0; s.rightOrder=makeShuffledOrder(EXT_PAIRS.length); saveState(); renderExtMatch(); });
   btnrow.appendChild(resetBtn);
   c.appendChild(btnrow);
 }
@@ -1727,7 +2006,7 @@ function renderAiChecklist(){
 }
 
 /* ============================================================
-   8. LUYỆN TẬP — bài kiểm tra 7 câu
+   8. LUYỆN TẬP — quick check 5 câu
    ============================================================ */
 function renderQuiz(){
   const wrap = document.getElementById('quizQuestions');
@@ -1860,6 +2139,7 @@ function initEssay(num){
     hintBtn.disabled=false;
     beep('ok');
     checkApplyComplete();
+    updateNavUI();
   });
   hintBtn.addEventListener('click',()=>{
     STATE.apply[hintKey]=true;
@@ -1875,43 +2155,46 @@ function checkApplyComplete(){
    10. TỔNG KẾT
    ============================================================ */
 function renderSummary(){
-  const doneCount = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
-  const pct = Math.round(doneCount/TRACKED_SECTIONS.length*100);
+  const m=missionState();
+  const doneCount=[1,2,3].filter(n=>m[n]).length;
+  const pct=Math.round(doneCount/3*100);
   document.getElementById('summaryTitle').textContent = STATE.studentName ? 'Kết quả học tập của '+STATE.studentName : 'Kết quả học tập';
   document.getElementById('sumProgress').textContent = pct+'%';
   document.getElementById('sumQuizScore').textContent = STATE.quiz.submitted ? STATE.quiz.score.toFixed(1) : '–';
-
-  const activities = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
-  document.getElementById('sumActivities').textContent = activities + '/' + TRACKED_SECTIONS.length;
+  document.getElementById('sumActivities').textContent = doneCount + '/3 Mission';
 
   const badgeWrap=document.getElementById('badgeWrap');
   badgeWrap.innerHTML='';
-  if(doneCount===TRACKED_SECTIONS.length){
+  if(doneCount===3){
     badgeWrap.innerHTML = '<div class="badge"><div class="ico">'+BADGE.icon+'</div><div class="name">'+BADGE.name+'</div></div>';
   } else {
     const p=document.createElement('p'); p.style.fontSize='.85rem'; p.style.color='var(--color-ink-soft)';
-    p.textContent='Hoàn thành tất cả các phần để nhận huy hiệu "'+BADGE.name+'"!';
+    p.textContent='Hoàn thành 3 Mission để nhận huy hiệu "'+BADGE.name+'"!';
     badgeWrap.appendChild(p);
   }
 
   const reviewList=document.getElementById('reviewList');
   reviewList.innerHTML='';
-  const sectionLabels = {warmup:'Khởi động',os:'Hệ điều hành',apps:'Phần mềm ứng dụng',compare:'Phân biệt hai loại phần mềm',ext:'Phần mở rộng của tệp',ai:'AI có trách nhiệm',quiz:'Luyện tập',apply:'Vận dụng'};
+  const labels={
+    1:'Mission 1 – File & Software Detective',
+    2:'Mission 2 – Software Rescue',
+    3:'Mission 3 – AI Guardian & Final Challenge'
+  };
   let needsReview=false;
-  TRACKED_SECTIONS.forEach(s=>{
-    if(!STATE.completed[s]){
+  [1,2,3].forEach(n=>{
+    if(!m[n]){
       needsReview=true;
-      const li=document.createElement('li'); li.textContent=sectionLabels[s];
+      const li=document.createElement('li'); li.textContent=labels[n];
       reviewList.appendChild(li);
     }
   });
   if(STATE.quiz.submitted && STATE.quiz.score<7){
     needsReview=true;
-    const li=document.createElement('li'); li.textContent='Ôn lại bài kiểm tra Luyện tập (điểm hiện tại: '+STATE.quiz.score.toFixed(1)+'/10)';
+    const li=document.createElement('li'); li.textContent='Xem lại Quick Check 5 câu (điểm hiện tại: '+STATE.quiz.score.toFixed(1)+'/10)';
     reviewList.appendChild(li);
   }
   if(!needsReview){
-    const li=document.createElement('li'); li.textContent='Em đã hoàn thành tốt tất cả nội dung. Tuyệt vời!';
+    const li=document.createElement('li'); li.textContent='Em đã hoàn thành đủ 3 Mission. Tuyệt vời!';
     reviewList.appendChild(li);
   }
   updateSheetSubmitPreview();
@@ -1997,7 +2280,7 @@ document.getElementById('tbPrint').addEventListener('click',()=>{
 /* ============================================================
    GOOGLE SHEET – GỬI KẾT QUẢ QUA APPS SCRIPT WEB APP
    ============================================================ */
-const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbxr-TGQbI3xSSdcjM5xiznYZB8ub_w5gE-oVvwkQpEiA6r-OS0G98VSBph1gMS1cBDURA/exec';
+const GOOGLE_SHEET_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycby-ru3BtmNm80KeWksBRz_iL4BPqpgIWtoa0zmhTsK5/dev';
 
 function getCorrectAppsMatchCount(){
   return Object.entries(STATE.appsMatch.matched)
@@ -2028,8 +2311,9 @@ function getAiResultText(){
 }
 
 function getProgressText(){
-  const done=TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
-  return `${done}/${TRACKED_SECTIONS.length} (${Math.round(done/TRACKED_SECTIONS.length*100)}%)`;
+  const m=missionState();
+  const done=[1,2,3].filter(n=>m[n]).length;
+  return `${done}/3 Mission (${Math.round(done/3*100)}%)`;
 }
 
 function buildSheetPayload(){
@@ -2037,26 +2321,36 @@ function buildSheetPayload(){
     hoTen: (STATE.studentName || '').trim(),
     lop: (STATE.studentClass || '').trim(),
 
-    // Cột "Quick Check" của Apps Script đang được dùng để lưu hai hoạt động nhận diện/phân biệt của tiết 2.
-    quickCheck:
-      `Chọn phần mềm: ${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length}; ` +
-      `Phân biệt HĐH/PMƯD: ${getCorrectCompareCount()}/${COMPARE_SORT_ITEMS.length}`,
+    mission1File:
+      `${getCorrectExtensionCount()}/${EXT_PAIRS.length} đúng` +
+      ` · ${STATE.extMatch.attempts || 0} lượt ghép`,
 
-    fileExtension:
-      `${getCorrectExtensionCount()}/${EXT_PAIRS.length} (số lần ghép: ${STATE.extMatch.attempts || 0})`,
+    mission1Software:
+      `${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length} đúng`,
 
-    softwareDetective: getAiResultText(),
+    mission2Sort:
+      `${getCorrectCompareCount()}/${COMPARE_SORT_ITEMS.length} đúng`,
 
-    luyenTap: STATE.quiz.submitted ? `${STATE.quiz.score.toFixed(1)}/10` : 'Chưa nộp',
+    mission2Explain:
+      STATE.apply.essay2 || '',
 
-    vanDung1: STATE.apply.essay1 || '',
-    vanDung2: STATE.apply.essay2 || '',
-    exitTicket: STATE.exitTicket || '',
+    mission3AI:
+      getAiResultText(),
 
-    tienDo: getProgressText(),
+    mission3Quiz:
+      STATE.quiz.submitted ? `${STATE.quiz.score.toFixed(1)}/10` : 'Chưa nộp',
 
-    // Website hiện chỉ có một điểm số chuẩn hóa là bài luyện tập /10.
-    tongDiem: STATE.quiz.submitted ? STATE.quiz.score.toFixed(1) : ''
+    mission3Apply:
+      STATE.apply.essay1 || '',
+
+    exitTicket:
+      STATE.exitTicket || '',
+
+    tienDo:
+      getProgressText(),
+
+    xp:
+      `${getXP()}/100`
   };
 }
 
@@ -2073,7 +2367,7 @@ function updateSheetSubmitPreview(){
       : 'Chưa nhập thông tin';
 
   resultInfo.textContent =
-    `Tiến độ ${getProgressText()} · Luyện tập ${
+    `Tiến độ ${getProgressText()} · XP ${getXP()}/100 · Quick Check ${
       STATE.quiz.submitted ? STATE.quiz.score.toFixed(1)+'/10' : 'chưa nộp'
     }`;
 
@@ -2107,15 +2401,17 @@ async function sendResultToGoogleSheet(){
 
   if(!STATE.exitTicket || !STATE.exitTicket.trim()){
     fb.className='feedback show no';
-    fb.textContent='! Em cần hoàn thành Exit Ticket trước khi gửi kết quả.';
-    document.getElementById('exitTicket')?.focus();
+    fb.textContent='! Em cần tích ít nhất một nội dung trong Exit Ticket trước khi gửi kết quả.';
+    document.getElementById('exitChecklist')?.scrollIntoView({behavior:'smooth',block:'center'});
+    document.getElementById('exitCheck0')?.focus();
     return;
   }
 
-  const unfinished=TRACKED_SECTIONS.filter(s=>!STATE.completed[s]);
+  const missionNow=missionState();
+  const unfinished=[1,2,3].filter(n=>!missionNow[n]);
   if(unfinished.length){
     fb.className='feedback show no';
-    fb.textContent='! Em còn ' + unfinished.length + ' phần chưa hoàn thành. Hãy hoàn thành bài trước khi gửi.';
+    fb.textContent='! Em còn '+unfinished.length+' Mission chưa hoàn thành. Hãy hoàn thành bài trước khi gửi.';
     return;
   }
 
@@ -2167,24 +2463,72 @@ if(sendSheetBtn){
    EXIT TICKET – lưu tự động
    ============================================================ */
 function initExitTicket(){
-  const el=document.getElementById('exitTicket');
-  const wc=document.getElementById('exitWc');
-  if(!el || !wc) return;
-  el.value=STATE.exitTicket || '';
-  const update=()=>{
-    const newValue=el.value;
-    if(newValue!==STATE.exitTicket && STATE.sheetSubmission && STATE.sheetSubmission.sent){
-      STATE.sheetSubmission={sent:false,sentAt:''};
-    }
-    STATE.exitTicket=newValue;
-    const count=el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
-    wc.textContent=count;
-    saveState();
-    updateSheetSubmitPreview();
-  };
-  el.addEventListener('input',update);
-  update();
+  const wrap=document.getElementById('exitChecklist');
+  const status=document.getElementById('exitCheckStatus');
+  if(!wrap || !status) return;
+
+  if(!Array.isArray(STATE.exitTicketChecks) || STATE.exitTicketChecks.length!==EXIT_TICKET_ITEMS.length){
+    STATE.exitTicketChecks=Array(EXIT_TICKET_ITEMS.length).fill(false);
+  }
+
+  wrap.innerHTML='';
+  EXIT_TICKET_ITEMS.forEach((text,i)=>{
+    const label=document.createElement('label');
+    const input=document.createElement('input');
+    input.type='checkbox';
+    input.id='exitCheck'+i;
+    input.checked=!!STATE.exitTicketChecks[i];
+
+    input.addEventListener('change',()=>{
+      const before=STATE.exitTicket;
+      STATE.exitTicketChecks[i]=input.checked;
+
+      const selected=EXIT_TICKET_ITEMS.filter((_,idx)=>STATE.exitTicketChecks[idx]);
+      STATE.exitTicket=selected.join(' | ');
+
+      if(STATE.exitTicket!==before && STATE.sheetSubmission && STATE.sheetSubmission.sent){
+        STATE.sheetSubmission={sent:false,sentAt:''};
+      }
+
+      const count=selected.length;
+      status.textContent=count
+        ? `Đã chọn ${count}/${EXIT_TICKET_ITEMS.length} nội dung · được lưu tự động`
+        : 'Chưa chọn nội dung nào.';
+      status.style.color=count ? 'var(--color-success)' : 'var(--color-primary-dark)';
+      saveState();
+      updateSheetSubmitPreview();
+    });
+
+    const span=document.createElement('span');
+    span.textContent=text;
+    label.appendChild(input);
+    label.appendChild(span);
+    wrap.appendChild(label);
+  });
+
+  const selected=EXIT_TICKET_ITEMS.filter((_,idx)=>STATE.exitTicketChecks[idx]);
+  STATE.exitTicket=selected.join(' | ');
+  status.textContent=selected.length
+    ? `Đã chọn ${selected.length}/${EXIT_TICKET_ITEMS.length} nội dung · được lưu tự động`
+    : 'Chưa chọn nội dung nào.';
+  status.style.color=selected.length ? 'var(--color-success)' : 'var(--color-primary-dark)';
+  saveState();
 }
+
+/* ============================================================
+   MÃ ĐIỀU PHỐI – DÀNH CHO GIÁO VIÊN
+   ============================================================ */
+document.getElementById('tbGateInfo')?.addEventListener('click',()=>{
+  alert(
+`MÃ ĐIỀU PHỐI DATA LAB
+
+MISSION 1 – File & Software Detective: FILE7
+MISSION 2 – Software Rescue: SOFT7
+MISSION 3 – AI Guardian & Final Challenge: AI7
+
+Mật khẩu GV mở mọi phần: GV2026`
+  );
+});
 
 /* ============================================================
    KHỞI TẠO
