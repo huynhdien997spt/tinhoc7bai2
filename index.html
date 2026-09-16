@@ -892,7 +892,7 @@ input[aria-invalid="true"]{
   </div>
   <div class="card" id="sheetSubmitCard">
     <h3>📤 Xác nhận kết quả cuối cho giáo viên</h3>
-    <p style="font-size:.88rem;">Kết quả 3 Mission sẽ được gửi vào Google Sheet. Lưu ý: cần dùng Apps Script Web App URL kết thúc bằng /exec. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và tích ít nhất một nội dung trong Exit Ticket trước khi gửi.</p>
+    <p style="font-size:.88rem;">Google Sheet chỉ lưu 1 cột cho mỗi Mission để Thầy theo dõi gọn hơn. Hãy kiểm tra <strong>Họ tên</strong>, <strong>Lớp</strong> và tích ít nhất một nội dung trong Exit Ticket trước khi gửi.</p>
     <div class="grid2" style="margin-bottom:12px;">
       <div class="concept-card"><h4>👤 Học sinh</h4><p id="submitStudentInfo">Chưa nhập thông tin</p></div>
       <div class="concept-card"><h4>📊 Kết quả</h4><p id="submitResultInfo">Chưa hoàn thành</p></div>
@@ -1076,7 +1076,7 @@ const BADGE = {icon:'🏅', name:'Nhà khám phá phần mềm'};
 /* ============================================================
    TRẠNG THÁI & LƯU TRỮ
    ============================================================ */
-const STORAGE_KEY = 'datalab7_bai2_3mission_v3_autosave';
+const STORAGE_KEY = 'datalab7_bai2_3mission_v4_compact';
 
 function defaultState(){
   return {
@@ -2484,44 +2484,39 @@ function getProgressText(){
 
 function buildSheetPayload(stage=''){
   ensureSessionId();
+
+  const m1FileScore=getMatchGameScore(STATE.extMatch, EXT_PAIRS.length);
+  const m1FileMax=getMatchGameMaxScore(EXT_PAIRS.length);
+  const m1SoftScore=getMatchGameScore(STATE.appsMatch, APPS_MATCH_PAIRS.length);
+  const m1SoftMax=getMatchGameMaxScore(APPS_MATCH_PAIRS.length);
+
+  const mission1 = missionState()[1]
+    ? `Ghép tệp ${getCorrectExtensionCount()}/${EXT_PAIRS.length} (${m1FileScore}/${m1FileMax}); ` +
+      `Chọn phần mềm ${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length} (${m1SoftScore}/${m1SoftMax}); ` +
+      `XP Mission 1: ${getMission1XP()}/30`
+    : '';
+
+  const mission2 = missionState()[2]
+    ? `Phân loại ${getCorrectCompareCount()}/${COMPARE_SORT_ITEMS.length}; ` +
+      `Giải thích: ${STATE.apply.essay2 || ''}`
+    : '';
+
+  const mission3 = missionState()[3]
+    ? `AI: ${getAiResultText()}; ` +
+      `Quick Check: ${STATE.quiz.submitted ? STATE.quiz.score.toFixed(1)+'/10' : 'Chưa nộp'}; ` +
+      `Vận dụng: ${STATE.apply.essay1 || ''}`
+    : '';
+
   return {
     sessionId: STATE.sessionId,
     stage: stage || '',
     hoTen: (STATE.studentName || '').trim(),
     lop: (STATE.studentClass || '').trim(),
-
-    mission1File:
-      `${getCorrectExtensionCount()}/${EXT_PAIRS.length} đúng` +
-      ` · Điểm ${getMatchGameScore(STATE.extMatch, EXT_PAIRS.length)}/${getMatchGameMaxScore(EXT_PAIRS.length)}` +
-      ` · ${STATE.extMatch.attempts || 0} lượt thử`,
-
-    mission1Software:
-      `${getCorrectAppsMatchCount()}/${APPS_MATCH_PAIRS.length} đúng` +
-      ` · Điểm ${getMatchGameScore(STATE.appsMatch, APPS_MATCH_PAIRS.length)}/${getMatchGameMaxScore(APPS_MATCH_PAIRS.length)}`,
-
-    mission2Sort:
-      `${getCorrectCompareCount()}/${COMPARE_SORT_ITEMS.length} đúng`,
-
-    mission2Explain:
-      STATE.apply.essay2 || '',
-
-    mission3AI:
-      getAiResultText(),
-
-    mission3Quiz:
-      STATE.quiz.submitted ? `${STATE.quiz.score.toFixed(1)}/10` : 'Chưa nộp',
-
-    mission3Apply:
-      STATE.apply.essay1 || '',
-
-    exitTicket:
-      STATE.exitTicket || '',
-
-    tienDo:
-      getProgressText(),
-
-    xp:
-      `${getXP()}/100`
+    mission1,
+    mission2,
+    mission3,
+    exitTicket: STATE.exitTicket || '',
+    xp: `${getXP()}/100`
   };
 }
 
