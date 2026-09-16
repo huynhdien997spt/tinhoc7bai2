@@ -468,6 +468,18 @@ body{
 .final-victory .trophy{font-size:3.4rem;}
 .final-victory h3{color:#5b21b6;font-size:1.25rem;margin-top:4px;}
 
+
+.navbtn.locked{
+  opacity:.42;
+  cursor:not-allowed;
+  filter:grayscale(.75);
+}
+input[aria-invalid="true"]{
+  border-color:var(--color-error)!important;
+  box-shadow:0 0 0 4px rgba(200,64,44,.12);
+  animation:softShake .28s ease;
+}
+
 </style>
 </head>
 <body>
@@ -512,10 +524,13 @@ body{
       </div>
       <div class="namebox">
         <label for="studentNameInput" class="sr-only">Họ và tên học sinh</label>
-        <input id="studentNameInput" type="text" placeholder="Nhập họ và tên của em...">
+        <input id="studentNameInput" type="text" placeholder="Nhập họ và tên của em..." required autocomplete="name">
         <label for="studentClassInput" class="sr-only">Lớp</label>
         <input id="studentClassInput" type="text" placeholder="Lớp, ví dụ: 7A1">
       </div>
+      <p id="nameGateNote" style="font-size:.82rem;margin:-6px auto 12px;max-width:420px;color:var(--color-primary-dark);font-weight:700;">
+        🔐 Nhập họ và tên để mở khóa DATA LAB.
+      </p>
       <button class="btn btn-primary" id="startBtn" style="font-size:1.05rem;padding:13px 30px;">VÀO DATA LAB 🚀</button>
     </div>
     <div class="mission-map" id="missionMapHome">
@@ -1147,6 +1162,9 @@ function updateNavUI(){
     const id=b.dataset.section;
     b.classList.toggle('active', id===STATE.currentScreen);
     b.classList.toggle('done', !!STATE.completed[id]);
+    const hasName=(document.getElementById('studentNameInput')?.value || STATE.studentName || '').trim().length>0;
+    b.classList.toggle('locked', id!=='home' && !hasName);
+    b.setAttribute('aria-disabled', (id!=='home' && !hasName) ? 'true' : 'false');
   });
   const doneCount = TRACKED_SECTIONS.filter(s=>STATE.completed[s]).length;
   const pct = Math.round(doneCount/TRACKED_SECTIONS.length*100);
@@ -1155,6 +1173,27 @@ function updateNavUI(){
 }
 
 function showScreen(id){
+  // CỔNG DANH TÍNH: mọi màn hình ngoài Trang chủ đều yêu cầu đã nhập họ tên.
+  const typedName=(document.getElementById('studentNameInput')?.value || STATE.studentName || '').trim();
+  if(id!=='home' && !typedName){
+    STATE.currentScreen='home';
+    saveState();
+
+    document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
+    document.getElementById('screen-home')?.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    updateNavUI();
+    updateGameHUD();
+
+    showGameToast('🔐 DATA LAB đang khóa','Hãy nhập họ và tên để mở khóa các nhiệm vụ.');
+    setTimeout(()=>document.getElementById('studentNameInput')?.focus(),120);
+    return;
+  }
+
+  if(typedName && typedName!==STATE.studentName){
+    STATE.studentName=typedName;
+  }
+
   document.querySelectorAll('.screen').forEach(sc=>sc.classList.remove('active'));
   const el = document.getElementById('screen-'+id);
   if(el) el.classList.add('active');
@@ -1204,23 +1243,28 @@ const nameInput = document.getElementById('studentNameInput');
 const classInput = document.getElementById('studentClassInput');
 nameInput.value = STATE.studentName || '';
 classInput.value = STATE.studentClass || '';
-nameInput.addEventListener('input',()=>{ STATE.studentName = nameInput.value; saveState(); });
+nameInput.addEventListener('input',()=>{
+  STATE.studentName = nameInput.value;
+  if(nameInput.value.trim()) nameInput.removeAttribute('aria-invalid');
+  saveState();
+  updateGameHUD();
+});
 classInput.addEventListener('input',()=>{ STATE.studentClass = classInput.value; saveState(); });
 document.getElementById('startBtn').addEventListener('click',()=>{
   STATE.studentName = nameInput.value.trim();
   STATE.studentClass = classInput.value.trim();
   saveState();
+
   if(!STATE.studentName){
-    alert('Em hãy nhập họ và tên trước khi bắt đầu.');
+    showGameToast('🔐 Chưa thể vào DATA LAB','Em hãy nhập họ và tên trước khi bắt đầu.');
     nameInput.focus();
+    nameInput.setAttribute('aria-invalid','true');
     return;
   }
-  if(!STATE.studentClass){
-    alert('Em hãy nhập lớp trước khi bắt đầu.');
-    classInput.focus();
-    return;
-  }
-  showScreen('apps');
+
+  nameInput.removeAttribute('aria-invalid');
+  showGameToast('✅ Danh tính đã xác nhận',`Chào ${STATE.studentName}! DATA LAB đã được mở khóa.`);
+  setTimeout(()=>showScreen('apps'),350);
 });
 
 /* ============================================================
@@ -2164,7 +2208,11 @@ function renderAll(){
   updateNavUI();
   updateGameHUD();
   updateSoundBtn();
-  showScreen(STATE.currentScreen || 'home');
+  if(!(STATE.studentName||'').trim() && STATE.currentScreen!=='home'){
+  STATE.currentScreen='home';
+  saveState();
+}
+showScreen(STATE.currentScreen || 'home');
 }
 renderAll();
 </script>
